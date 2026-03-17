@@ -3,84 +3,46 @@ import Foundation
 
 @Model
 class FlatOwnerProfile {
-
-    var id: UUID
+    @Attribute(.unique) var id: UUID = UUID()
     var userID: UUID
-
+    
+    // Personal Details
     var fullName: String
     var email: String
     var phoneNumber: String
     var age: Int
-
-    var propertyName: String
-    var propertyAddress: String
-    var city: String
-    var postalCode: String
-
-    var propertyImages: [String]
-    var arModelFile: String
-
-    var rent: Double
-    var availableFrom: Date
-    var preferredTenantType: String  // "male", "female", "any"
-
-    // Lifestyle preferences for matching
-    var cleanlinessLevel: Int
-    var sleepSchedule: String
-    var smokingPreference: String
-    var petsPreference: String
-    var foodPreference: String
-    var guestFrequency: String
-    var noiseLevel: String
-
-    var aadhaarVerified: Bool
-
-    init(
-        userID: UUID,
-        fullName: String = "",
-        email: String = "",
-        phoneNumber: String = "",
-        age: Int = 25,
-        propertyName: String = "",
-        propertyAddress: String = "",
-        city: String = "",
-        postalCode: String = "",
-        propertyImages: [String] = [],
-        arModelFile: String = "",
-        rent: Double = 0,
-        availableFrom: Date = Date(),
-        preferredTenantType: String = "any",
-        cleanlinessLevel: Int = 3,
-        sleepSchedule: String = "moderate",
-        smokingPreference: String = "no",
-        petsPreference: String = "indifferent",
-        foodPreference: String = "any",
-        guestFrequency: String = "sometimes",
-        noiseLevel: String = "moderate",
-        aadhaarVerified: Bool = false
-    ) {
-        self.id = UUID()
+    var aadhaarVerified: Bool = false
+    
+    // Property Details
+    var propertyName: String = ""
+    var propertyAddress: String = ""
+    var city: String = ""
+    var postalCode: String = ""
+    var propertyImages: [String] = []
+    
+    // Optional AR Map File Path
+    var arModelFile: String?
+    
+    // Rent & Availability
+    var rent: Double = 0.0
+    var availableFrom: Date = Date()
+    var preferredTenantType: String = "any"
+    
+    // MARK: - Lifestyle Expectations
+    
+    var cleanlinessLevel: Int = 3
+    var sleepSchedule: String = "moderate"
+    var smokingPreference: String = "no"
+    var petsPreference: String = "indifferent"
+    var foodPreference: String = "any"
+    var guestFrequency: String = "sometimes"
+    var noiseLevel: String = "moderate"
+    
+    init(userID: UUID, fullName: String, email: String, phoneNumber: String, age: Int) {
         self.userID = userID
         self.fullName = fullName
         self.email = email
         self.phoneNumber = phoneNumber
         self.age = age
-        self.propertyName = propertyName
-        self.propertyAddress = propertyAddress
-        self.city = city
-        self.postalCode = postalCode
-        self.propertyImages = propertyImages
-        self.arModelFile = arModelFile
-        self.rent = rent
-        self.availableFrom = availableFrom
-        self.preferredTenantType = preferredTenantType
-        self.cleanlinessLevel = cleanlinessLevel
-        self.sleepSchedule = sleepSchedule
-        self.smokingPreference = smokingPreference
-        self.petsPreference = petsPreference
-        self.foodPreference = foodPreference
-        self.guestFrequency = guestFrequency
-        self.noiseLevel = noiseLevel
-        self.aadhaarVerified = aadhaarVerified
     }
 }

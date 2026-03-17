@@ -5,7 +5,7 @@ enum UserMode: String, Codable, CaseIterable {
     case findFlats = "findFlats"
     case findFlatmates = "findFlatmates"
     case both = "both"
-
+    
     var displayName: String {
         switch self {
         case .findFlats: return "Find Flats"
@@ -13,7 +13,7 @@ enum UserMode: String, Codable, CaseIterable {
         case .both: return "Both"
         }
     }
-
+    
     var icon: String {
         switch self {
         case .findFlats: return "building.2"
@@ -25,44 +25,36 @@ enum UserMode: String, Codable, CaseIterable {
 
 @Model
 class User {
-    var id: UUID
+    @Attribute(.unique) var id: UUID = UUID()
+    
+    // Profile info
     var fullName: String
     var email: String
     var phoneNumber: String
     var age: Int
-    var profilePhotoURL: String
-    var activeModeRaw: String
-    var canFindFlats: Bool
-    var canFindFlatmates: Bool
-    var isOnboardingComplete: Bool
-    var createdAt: Date
-
+    var profilePhotoURL: String?
+    
+    // App state
+    var activeModeRaw: String = UserMode.both.rawValue
+    var canFindFlats: Bool = true
+    var canFindFlatmates: Bool = true
+    var isOnboardingComplete: Bool = false
+    
+    var createdAt: Date = Date()
+    
     var activeMode: UserMode {
         get { UserMode(rawValue: activeModeRaw) ?? .both }
-        set { activeModeRaw = newValue.rawValue }
+        set { 
+            activeModeRaw = newValue.rawValue
+            canFindFlats = newValue == .findFlats || newValue == .both
+            canFindFlatmates = newValue == .findFlatmates || newValue == .both
+        }
     }
-
-    init(
-        fullName: String = "",
-        email: String = "",
-        phoneNumber: String = "",
-        age: Int = 25,
-        profilePhotoURL: String = "",
-        activeMode: UserMode = .both,
-        canFindFlats: Bool = true,
-        canFindFlatmates: Bool = true,
-        isOnboardingComplete: Bool = false
-    ) {
-        self.id = UUID()
+    
+    init(fullName: String = "", email: String = "", phoneNumber: String = "", age: Int = 25) {
         self.fullName = fullName
         self.email = email
         self.phoneNumber = phoneNumber
         self.age = age
-        self.profilePhotoURL = profilePhotoURL
-        self.activeModeRaw = activeMode.rawValue
-        self.canFindFlats = canFindFlats
-        self.canFindFlatmates = canFindFlatmates
-        self.isOnboardingComplete = isOnboardingComplete
-        self.createdAt = Date()
     }
 }

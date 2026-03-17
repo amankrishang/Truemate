@@ -3,70 +3,41 @@ import Foundation
 
 @Model
 class FlatmateListing {
-
-    var id: UUID
+    @Attribute(.unique) var id: UUID = UUID()
     var ownerID: UUID
-
-    var propertyType: String   // "apartment", "villa", "pg", "shared"
-    var roomType: String       // "single", "double", "triple"
+    var createdAt: Date = Date()
+    
+    // Property basics
     var propertyName: String
-
+    var propertyType: String
+    var roomType: String
     var location: String
     var rent: Double
     var genderPreference: String
-
+    
     var listingDescription: String
-    var images: [String]
-
-    var suitabilityScore: Int  // 0-100
-    var createdAt: Date
-
-    // Lifestyle attributes for suitability calculation
-    var cleanlinessLevel: Int
-    var sleepSchedule: String
-    var smokingPreference: String
-    var petsPreference: String
-    var foodPreference: String
-    var guestFrequency: String
-    var noiseLevel: String
-
-    init(
-        ownerID: UUID,
-        propertyType: String = "apartment",
-        roomType: String = "single",
-        propertyName: String = "",
-        location: String = "",
-        rent: Double = 0,
-        genderPreference: String = "any",
-        listingDescription: String = "",
-        images: [String] = [],
-        suitabilityScore: Int = 0,
-        cleanlinessLevel: Int = 3,
-        sleepSchedule: String = "moderate",
-        smokingPreference: String = "no",
-        petsPreference: String = "indifferent",
-        foodPreference: String = "any",
-        guestFrequency: String = "sometimes",
-        noiseLevel: String = "moderate"
-    ) {
-        self.id = UUID()
+    var images: [String] = []
+    
+    var suitabilityScore: Int = 0
+    
+    // MARK: - Required Lifestyle Traits
+    
+    var cleanlinessLevel: Int = 3
+    var sleepSchedule: String = "moderate"
+    var smokingPreference: String = "no"
+    var petsPreference: String = "indifferent"
+    var foodPreference: String = "any"
+    var guestFrequency: String = "sometimes"
+    var noiseLevel: String = "moderate"
+    
+    init(ownerID: UUID, propertyName: String, propertyType: String = "apartment", roomType: String = "single", location: String, rent: Double, genderPreference: String = "any", description: String = "") {
         self.ownerID = ownerID
+        self.propertyName = propertyName
         self.propertyType = propertyType
         self.roomType = roomType
-        self.propertyName = propertyName
         self.location = location
         self.rent = rent
         self.genderPreference = genderPreference
-        self.listingDescription = listingDescription
-        self.images = images
-        self.suitabilityScore = suitabilityScore
-        self.createdAt = Date()
-        self.cleanlinessLevel = cleanlinessLevel
-        self.sleepSchedule = sleepSchedule
-        self.smokingPreference = smokingPreference
-        self.petsPreference = petsPreference
-        self.foodPreference = foodPreference
-        self.guestFrequency = guestFrequency
-        self.noiseLevel = noiseLevel
+        self.listingDescription = description
     }
 }
