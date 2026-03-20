@@ -6,7 +6,7 @@ struct TruemateApp: App {
 
     var body: some Scene {
         WindowGroup {
-            MainTabView()
+            AuthEntryView()
         }
         .modelContainer(for: [
             User.self,

@@ -1,32 +1,29 @@
 import SwiftUI
-import CoreLocation
-import Combine
+import UserNotifications
 
-struct LocationPermissionView: View {
-    var onEnable: (() -> Void)? = nil
+struct NotificationsPermissionView: View {
+    var onAllow: (() -> Void)? = nil
     var onNotNow: (() -> Void)? = nil
-
-    @StateObject private var locationManager = LocationPermissionManager()
 
     var body: some View {
         VStack(spacing: 0) {
             Spacer()
 
-            Image(systemName: "location.fill")
+            Image(systemName: "bell.badge.fill")
                 .resizable()
                 .scaledToFit()
-                .frame(width: 100, height: 100)
+                .frame(width: 110, height: 110)
                 .foregroundColor(.blue)
                 .padding(.bottom, 40)
 
-            Text("See who's near\nyou")
+            Text("Stay updated\ninstantly")
                 .font(.system(size: 36, weight: .bold))
                 .foregroundColor(.blue)
                 .multilineTextAlignment(.center)
                 .lineSpacing(2)
                 .padding(.bottom, 20)
 
-            Text("Your location is only used to improve\nmatches and is never shared without\nyour consent.")
+            Text("We'll notify you when you get a\nmatch or a new listing is posted")
                 .font(.system(size: 18, weight: .regular))
                 .foregroundColor(.primary)
                 .multilineTextAlignment(.center)
@@ -35,10 +32,10 @@ struct LocationPermissionView: View {
             Spacer()
 
             Button(action: {
-                locationManager.requestPermission()
-                onEnable?()
+                requestNotificationPermission()
+                onAllow?()
             }) {
-                Text("Enable Location")
+                Text("Allow Notifications")
                     .font(.system(size: 20, weight: .semibold))
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
@@ -67,26 +64,20 @@ struct LocationPermissionView: View {
         .background(Color.white)
         .navigationBarHidden(true)
     }
-}
 
-class LocationPermissionManager: NSObject, ObservableObject, CLLocationManagerDelegate {
-    private let manager = CLLocationManager()
-
-    override init() {
-        super.init()
-        manager.delegate = self
-    }
-
-    func requestPermission() {
-        manager.requestWhenInUseAuthorization()
-    }
-
-    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-        let status = manager.authorizationStatus
-        print("Location authorization status: \(status.rawValue)")
+    private func requestNotificationPermission() {
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
+            DispatchQueue.main.async {
+                if let error = error {
+                    print("Notification permission error: \(error.localizedDescription)")
+                } else {
+                    print("Notification permission granted: \(granted)")
+                }
+            }
+        }
     }
 }
 
 #Preview {
-    LocationPermissionView()
+    NotificationsPermissionView()
 }
