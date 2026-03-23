@@ -17,9 +17,9 @@ struct CreatePostView: View {
 
     @State private var monthlyRent: String = ""
 
-    let propertyTypes = ["Apartment", "House", "Studio", "Villa", "PG"]
-    let roomTypes = ["Single", "Double", "Triple", "Shared"]
-    let genderOptions = ["Male", "Female", "Any"]
+    let propertyTypes = PostFormOptions.propertyTypes
+    let roomTypes = PostFormOptions.roomTypes
+    let genderOptions = PostFormOptions.genderOptions
 
     var body: some View {
         VStack(spacing: 0) {
@@ -175,6 +175,17 @@ struct CreatePostView: View {
                         .padding(.vertical, 16)
                         .background(Color.white)
                         .cornerRadius(14)
+                    }
+                    .padding(.horizontal)
+
+                    Button(action: { handleSubmit() }) {
+                        Text("Create Post")
+                            .font(.system(size: 18, weight: .semibold))
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 16)
+                            .background(Color.blue)
+                            .cornerRadius(14)
                     }
                     .padding(.horizontal)
                     .padding(.bottom, 32)

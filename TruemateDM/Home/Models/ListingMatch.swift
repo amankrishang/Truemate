@@ -16,3 +16,9 @@ extension ListingMatch {
         ListingMatch(name: "Abhishek Gupta", lookingFor: "Looking for 2 BHK Apartment", pricePerMonth: 9500, timeAgo: "1d ago", imageName: "person.crop.circle.fill")
     ]
 }
+
+struct PostFormOptions {
+    static let propertyTypes = ["Apartment", "House", "Studio", "Villa", "PG"]
+    static let roomTypes = ["Single", "Double", "Triple", "Shared"]
+    static let genderOptions = ["Male", "Female", "Any"]
+}

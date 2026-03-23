@@ -1,16 +1,18 @@
 import SwiftUI
 
-struct AppStoreStyleTabView: View {
+struct BaseMatchView: View {
     @State private var hasCreatedPost = false
     @State private var selectedTab = 0
 
     var body: some View {
         TabView(selection: $selectedTab) {
-            Group {
-                if hasCreatedPost {
-                    MatchesWithPostView(onCreatePostSuccess: { hasCreatedPost = true })
-                } else {
-                    MatchesHomeView(onCreatePostSuccess: { hasCreatedPost = true })
+            NavigationStack {
+                Group {
+                    if hasCreatedPost {
+                        MatchesWithPostView(onCreatePostSuccess: { hasCreatedPost = true })
+                    } else {
+                        MatchesHomeView(onCreatePostSuccess: { hasCreatedPost = true })
+                    }
                 }
             }
             .tabItem {
@@ -49,6 +51,8 @@ struct AppStoreStyleTabView: View {
 struct MatchesHomeView: View {
     var onCreatePostSuccess: () -> Void
     @State private var showCreatePost = false
+    @State private var selectedProfileName = "Abhishek Gupta"
+    @State private var showFlatmateProfile = false
 
     let listings = ListingMatch.sample
 
@@ -133,6 +137,7 @@ struct MatchesHomeView: View {
                         .background(Color.blue)
                         .cornerRadius(12)
                     }
+                    .contentShape(Rectangle())
 
                     Text("Takes less than 2 minutes")
                         .font(.system(size: 12))
@@ -159,7 +164,14 @@ struct MatchesHomeView: View {
                 VStack(spacing: 0) {
                     ForEach(listings.indices, id: \.self) { index in
                         let listing = listings[index]
-                        ListingRowView(listing: listing)
+                        Button(action: {
+                            selectedProfileName = listing.name
+                            showFlatmateProfile = true
+                        }) {
+                            ListingRowView(listing: listing)
+                        }
+                        .buttonStyle(.plain)
+                        .contentShape(Rectangle())
                         if index < listings.count - 1 {
                             Divider()
                                 .padding(.leading, 80)
@@ -171,10 +183,19 @@ struct MatchesHomeView: View {
                 .padding(.horizontal)
                 .padding(.bottom, 16)
             }
+            NavigationLink(
+                destination: FlatmateProfileView(
+                    profile: FlatmateProfile.from(name: selectedProfileName)
+                ),
+                isActive: $showFlatmateProfile
+            ) {
+                EmptyView()
+            }
+            .hidden()
         }
         .background(Color(.systemGray6))
         .navigationBarHidden(true)
-        .sheet(isPresented: $showCreatePost) {
+        .fullScreenCover(isPresented: $showCreatePost) {
             CreatePostView(isPresented: $showCreatePost, onPostCreated: {
                 onCreatePostSuccess()
             })
@@ -187,6 +208,8 @@ struct MatchesWithPostView: View {
     @State private var showCreatePost = false
     @State private var showAllFlatmates = false
     @State private var showEditPost = false
+    @State private var selectedProfileName = "Abhishek Gupta"
+    @State private var showFlatmateProfile = false
 
     let flatmates = FlatmateMatch.sample
 
@@ -345,12 +368,27 @@ struct MatchesWithPostView: View {
 
                 VStack(spacing: 12) {
                     ForEach(flatmates) { match in
-                        FlatmateCardView(match: match)
+                        Button(action: {
+                            selectedProfileName = match.name
+                            showFlatmateProfile = true
+                        }) {
+                            FlatmateCardView(match: match)
+                        }
+                        .buttonStyle(.plain)
                     }
                 }
                 .padding(.horizontal)
                 .padding(.bottom, 24)
             }
+            NavigationLink(
+                destination: FlatmateProfileView(
+                    profile: FlatmateProfile.from(name: selectedProfileName)
+                ),
+                isActive: $showFlatmateProfile
+            ) {
+                EmptyView()
+            }
+            .hidden()
         }
         .background(Color(.systemGray6))
         .navigationBarHidden(true)
@@ -492,5 +530,5 @@ struct RoundedCorner: Shape {
 }
 
 #Preview {
-    AppStoreStyleTabView()
+    BaseMatchView()
 }

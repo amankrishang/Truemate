@@ -74,7 +74,23 @@ struct HomeLifestyleQuizView: View {
             Spacer()
 
             HStack {
+                Button(action: handlePrevious) {
+                    Text("Previous")
+                        .font(.system(size: 17, weight: .semibold))
+                        .foregroundColor(Color(red: 0.22, green: 0.42, blue: 0.98))
+                        .padding(.horizontal, 28)
+                        .padding(.vertical, 14)
+                        .background(Color.white)
+                        .overlay(
+                            Capsule()
+                                .stroke(Color(red: 0.22, green: 0.42, blue: 0.98), lineWidth: 1)
+                        )
+                }
+                .disabled(currentIndex == 0)
+                .opacity(currentIndex == 0 ? 0.4 : 1)
+
                 Spacer()
+
                 Button(action: handleNext) {
                     Text(isLastQuestion ? "Finish" : "Next")
                         .font(.system(size: 17, weight: .semibold))
@@ -104,6 +120,12 @@ struct HomeLifestyleQuizView: View {
         }
 
         currentIndex += 1
+    }
+
+    private func handlePrevious() {
+        if currentIndex > 0 {
+            currentIndex -= 1
+        }
     }
 
     private func saveAnswers() {

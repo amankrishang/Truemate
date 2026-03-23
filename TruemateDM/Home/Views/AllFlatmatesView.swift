@@ -3,29 +3,14 @@ import SwiftUI
 struct AllFlatmatesView: View {
     @Binding var isPresented: Bool
     @State private var selectedTab: FlatmateTab = .recommended
-    @State private var showAbhishekProfile = false
+    @State private var selectedProfile: FlatmateProfile? = nil
+    @State private var showProfilePage = false
     @State private var showFilterOptions = false
-    @State private var selectedSort: SortOption = .highestBudget
+    @State private var selectedSort: FlatmateSortOption = .highestBudget
 
     @State private var flatmates = Flatmate.sample
 
     enum FlatmateTab { case recommended, saved }
-
-    enum SortOption: CaseIterable {
-        case highestBudget
-        case lowestBudget
-        case highestMatch
-        case moveInSoonest
-
-        var title: String {
-            switch self {
-            case .highestBudget: return "Sort by Highest Budget"
-            case .lowestBudget: return "Sort by Lowest Budget"
-            case .highestMatch: return "Sort by Highest Match"
-            case .moveInSoonest: return "Sort by Move-In Soonest"
-            }
-        }
-    }
 
     var displayedFlatmates: [Flatmate] {
         if selectedTab == .recommended {
@@ -38,114 +23,126 @@ struct AllFlatmatesView: View {
      
 
     var body: some View {
-        ZStack(alignment: .topTrailing) {
-            VStack(spacing: 0) {
-                HStack {
+        NavigationStack {
+            ZStack(alignment: .topTrailing) {
+                VStack(spacing: 0) {
+                    HStack {
                     Button(action: { isPresented = false }) {
                         ZStack {
                             Circle()
                                 .fill(Color.white)
                                 .frame(width: 38, height: 38)
                                 .shadow(color: Color.black.opacity(0.08), radius: 4, x: 0, y: 2)
-                            Image(systemName: "chevron.left")
+                            Image(systemName: "xmark")
                                 .font(.system(size: 14, weight: .semibold))
                                 .foregroundColor(.primary)
                         }
                     }
 
-                    Spacer()
+                        Spacer()
 
-                    Text("All flatmates")
-                        .font(.system(size: 17, weight: .semibold))
-                        .foregroundColor(.primary)
+                        Text("All flatmates")
+                            .font(.system(size: 17, weight: .semibold))
+                            .foregroundColor(.primary)
 
-                    Spacer()
+                        Spacer()
 
-                    Button(action: { showFilterOptions = true }) {
-                        ZStack {
-                            Circle()
-                                .fill(Color.white)
-                                .frame(width: 38, height: 38)
-                                .shadow(color: Color.black.opacity(0.08), radius: 4, x: 0, y: 2)
-                            Image(systemName: "line.3.horizontal")
-                                .font(.system(size: 14, weight: .medium))
-                                .foregroundColor(.primary)
-                        }
-                    }
-                }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 12)
-
-                HStack(spacing: 0) {
-                    SegmentButton(title: "Recommended flatmates", isSelected: selectedTab == .recommended) {
-                        selectedTab = .recommended
-                    }
-                    SegmentButton(title: "Saved flatmates", isSelected: selectedTab == .saved) {
-                        selectedTab = .saved
-                    }
-                }
-                .background(Color(.systemGray5))
-                .cornerRadius(30)
-                .padding(.horizontal, 16)
-                .padding(.bottom, 16)
-
-                ScrollView {
-                    VStack(spacing: 12) {
-                        ForEach(displayedFlatmates, id: \.id) { flatmate in
-                            FlatmateDetailCard(
-                                flatmate: flatmate,
-                                onTapCard: {
-                                    if flatmate.name == "Abhishek Gupta" {
-                                        showAbhishekProfile = true
-                                    }
-                                },
-                                onToggleSave: {
-                                    if let i = flatmates.firstIndex(where: { $0.id == flatmate.id }) {
-                                        flatmates[i].isSaved.toggle()
-                                    }
-                                }
-                            )
+                        Button(action: { showFilterOptions = true }) {
+                            ZStack {
+                                Circle()
+                                    .fill(Color.white)
+                                    .frame(width: 38, height: 38)
+                                    .shadow(color: Color.black.opacity(0.08), radius: 4, x: 0, y: 2)
+                                Image(systemName: "line.3.horizontal")
+                                    .font(.system(size: 14, weight: .medium))
+                                    .foregroundColor(.primary)
+                            }
                         }
                     }
                     .padding(.horizontal, 16)
-                    .padding(.bottom, 24)
-                }
-            }
-            .background(Color(.systemGray6))
+                    .padding(.vertical, 12)
 
-            if showFilterOptions {
-                Color.black.opacity(0.001)
-                    .ignoresSafeArea()
-                    .onTapGesture { showFilterOptions = false }
-
-                VStack(spacing: 0) {
-                    ForEach(SortOption.allCases.indices, id: \.self) { index in
-                        let option = SortOption.allCases[index]
-                        filterRow(option)
-                        if index < SortOption.allCases.count - 1 {
-                            Divider().padding(.leading, 56)
+                    HStack(spacing: 0) {
+                        SegmentButton(title: "Recommended flatmates", isSelected: selectedTab == .recommended) {
+                            selectedTab = .recommended
+                        }
+                        SegmentButton(title: "Saved flatmates", isSelected: selectedTab == .saved) {
+                            selectedTab = .saved
                         }
                     }
+                    .background(Color(.systemGray5))
+                    .cornerRadius(30)
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 16)
+
+                    ScrollView {
+                        VStack(spacing: 12) {
+                            ForEach(displayedFlatmates, id: \.id) { flatmate in
+                                FlatmateDetailCard(
+                                flatmate: flatmate,
+                                onTapCard: {
+                                    selectedProfile = FlatmateProfile.from(name: flatmate.name)
+                                    showProfilePage = true
+                                },
+                                onToggleSave: {
+                                    if let i = flatmates.firstIndex(where: { $0.id == flatmate.id }) {
+                                            flatmates[i].isSaved.toggle()
+                                        }
+                                    }
+                                )
+                            }
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.bottom, 24)
+                    }
+
                 }
-                .background(.ultraThinMaterial)
-                .clipShape(RoundedRectangle(cornerRadius: 26))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 26)
-                        .stroke(Color.white.opacity(0.45), lineWidth: 1)
-                )
-                .shadow(color: Color.black.opacity(0.12), radius: 14, x: 0, y: 8)
-                .frame(width: 290)
-                .padding(.top, 72)
-                .padding(.trailing, 18)
+                .background(Color(.systemGray6))
+                
+                if let profile = selectedProfile {
+                    NavigationLink(
+                        destination: FlatmateProfileView(
+                            profile: profile,
+                            useBackButton: true
+                        ),
+                        isActive: $showProfilePage
+                    ) {
+                        EmptyView()
+                    }
+                    .hidden()
+                }
+
+                if showFilterOptions {
+                    Color.black.opacity(0.001)
+                        .ignoresSafeArea()
+                        .onTapGesture { showFilterOptions = false }
+
+                    VStack(spacing: 0) {
+                        ForEach(FlatmateSortOption.allCases.indices, id: \.self) { index in
+                            let option = FlatmateSortOption.allCases[index]
+                            filterRow(option)
+                            if index < FlatmateSortOption.allCases.count - 1 {
+                                Divider().padding(.leading, 56)
+                            }
+                        }
+                    }
+                    .background(.ultraThinMaterial)
+                    .clipShape(RoundedRectangle(cornerRadius: 26))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 26)
+                            .stroke(Color.white.opacity(0.45), lineWidth: 1)
+                    )
+                    .shadow(color: Color.black.opacity(0.12), radius: 14, x: 0, y: 8)
+                    .frame(width: 290)
+                    .padding(.top, 72)
+                    .padding(.trailing, 18)
+                }
             }
         }
         .navigationBarHidden(true)
-        .sheet(isPresented: $showAbhishekProfile) {
-            FlatmateProfileView(isPresented: $showAbhishekProfile)
-        }
     }
 
-    private func filterRow(_ option: SortOption) -> some View {
+    private func filterRow(_ option: FlatmateSortOption) -> some View {
         Button {
             selectedSort = option
             showFilterOptions = false

@@ -1,34 +1,37 @@
 import SwiftUI
 
 struct FlatmateProfileView: View {
-    @Binding var isPresented: Bool
+    @Environment(\.dismiss) private var dismiss
+    var onBack: (() -> Void)? = nil
 
-    @State private var showSuitabilityDetails = false
+    @State private var showSuitabilityDetailsPage = false
+    @State private var isSaved = false
 
-    @State var profile = FlatmateProfile.abhishek
+    var profile: FlatmateProfile = .abhishek
+    var useBackButton: Bool = false
 
     var body: some View {
         ScrollView {
             VStack(spacing: 0) {
                 HStack {
-                    Button(action: { isPresented = false }) {
+                    Button(action: closeScreen) {
                         ZStack {
                             Circle()
                                 .fill(Color.white)
                                 .frame(width: 38, height: 38)
                                 .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
-                            Image(systemName: "xmark")
+                            Image(systemName: useBackButton ? "chevron.left" : "xmark")
                                 .font(.system(size: 14, weight: .medium))
                                 .foregroundColor(.primary)
                         }
                     }
                     Spacer()
-                    Button(action: { profile.isSaved.toggle() }) {
+                    Button(action: { isSaved.toggle() }) {
                         ZStack {
                             Circle()
                                 .fill(Color.blue)
                                 .frame(width: 42, height: 42)
-                            Image(systemName: "heart.fill")
+                            Image(systemName: isSaved ? "heart.fill" : "heart")
                                 .font(.system(size: 18))
                                 .foregroundColor(.white)
                         }
@@ -63,8 +66,10 @@ struct FlatmateProfileView: View {
                 .padding(.bottom, 16)
 
                 Button(action: {
-                    NotificationCenter.default.post(name: .didSendAbhishekRequest, object: nil)
-                    isPresented = false
+                    if profile.name == "Abhishek Gupta" {
+                        NotificationCenter.default.post(name: .didSendAbhishekRequest, object: nil)
+                    }
+                    closeScreen()
                 }) {
                     Text("Send Message Request")
                         .font(.system(size: 16, weight: .semibold))
@@ -107,7 +112,7 @@ struct FlatmateProfileView: View {
                 }
                 .padding(.bottom, 16)
 
-                Button(action: { showSuitabilityDetails = true }) {
+                Button(action: { showSuitabilityDetailsPage = true }) {
                     HStack {
                         VStack(alignment: .leading, spacing: 4) {
                             Text("\(profile.suitabilityPercent)%  Suitability")
@@ -154,11 +159,27 @@ struct FlatmateProfileView: View {
                 }
                 .padding(.bottom, 32)
             }
+
+            NavigationLink(
+                destination: SuitabilityDetailsView(useBackButton: useBackButton),
+                isActive: $showSuitabilityDetailsPage
+            ) {
+                EmptyView()
+            }
+            .hidden()
         }
         .background(Color(.systemGray6))
         .navigationBarHidden(true)
-        .sheet(isPresented: $showSuitabilityDetails) {
-            SuitabilityDetailsView(isPresented: $showSuitabilityDetails)
+        .onAppear {
+            isSaved = profile.isSaved
+        }
+    }
+
+    private func closeScreen() {
+        if let onBack {
+            onBack()
+        } else {
+            dismiss()
         }
     }
 }
@@ -183,5 +204,5 @@ struct BasicInfoRow: View {
 }
 
 #Preview {
-    FlatmateProfileView(isPresented: .constant(true))
+    FlatmateProfileView()
 }

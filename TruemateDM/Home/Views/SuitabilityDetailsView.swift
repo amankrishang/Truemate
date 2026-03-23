@@ -1,23 +1,14 @@
 import SwiftUI
 
 struct SuitabilityDetailsView: View {
-    @Binding var isPresented: Bool
+    @Environment(\.dismiss) private var dismiss
+    var onBack: (() -> Void)? = nil
+    var useBackButton: Bool = false
 
     let matchName: String = "Abhishek"
 
-    let potentialMatches: [String] = [
-        "Night Routine",
-        "Budget",
-        "Pets"
-    ]
-
-    let potentialMismatches: [String] = [
-        "Guests",
-        "Cleaning",
-        "Late Night Calls",
-        "Household Responsibilities",
-        "Communication"
-    ]
+    let potentialMatches = SuitabilityDetailsData.potentialMatches
+    let potentialMismatches = SuitabilityDetailsData.potentialMismatches
 
     var body: some View {
         ZStack(alignment: .top) {
@@ -28,12 +19,12 @@ struct SuitabilityDetailsView: View {
                 VStack(spacing: 0) {
                     VStack(alignment: .leading, spacing: 0) {
                         HStack {
-                            Button(action: { isPresented = false }) {
+                            Button(action: { closeScreen() }) {
                                 ZStack {
                                     Circle()
                                         .fill(Color(.systemGray5))
                                         .frame(width: 36, height: 36)
-                                    Image(systemName: "xmark")
+                                    Image(systemName: useBackButton ? "chevron.left" : "xmark")
                                         .font(.system(size: 13, weight: .medium))
                                         .foregroundColor(.primary)
                                 }
@@ -132,8 +123,16 @@ struct SuitabilityDetailsView: View {
         }
         .navigationBarHidden(true)
     }
+
+    private func closeScreen() {
+        if let onBack {
+            onBack()
+        } else {
+            dismiss()
+        }
+    }
 }
 
 #Preview {
-    SuitabilityDetailsView(isPresented: .constant(true))
+    SuitabilityDetailsView()
 }

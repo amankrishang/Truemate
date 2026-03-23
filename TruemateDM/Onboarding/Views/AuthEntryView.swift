@@ -38,9 +38,6 @@ struct AuthEntryView: View {
                 )
             case .intro:
                 TrueMateOnboardingView(
-                    onBack: {
-                        screen = .signIn
-                    },
                     onGetStarted: {
                         screen = .lookingFor
                     }
@@ -81,7 +78,7 @@ struct AuthEntryView: View {
                     }
                 )
             case .home:
-                AppStoreStyleTabView()
+                BaseMatchView()
             }
         }
     }

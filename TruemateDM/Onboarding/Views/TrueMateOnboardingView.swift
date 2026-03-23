@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct TrueMateOnboardingView: View {
-    var onBack: (() -> Void)? = nil
     var onGetStarted: (() -> Void)? = nil
 
     var body: some View {
@@ -16,7 +15,6 @@ struct TrueMateOnboardingView: View {
             }
 
             BottomCardView(
-                onBack: { onBack?() },
                 onGetStarted: { onGetStarted?() }
             )
         }
@@ -56,7 +54,6 @@ struct PersonIconView: View {
 }
 
 struct BottomCardView: View {
-    var onBack: () -> Void
     var onGetStarted: () -> Void
 
     var body: some View {
@@ -77,13 +74,6 @@ struct BottomCardView: View {
             Spacer()
 
             HStack {
-                Button(action: onBack) {
-                    Text("Back")
-                        .font(.system(size: 16, weight: .regular))
-                        .foregroundColor(.white)
-                        .underline()
-                }
-
                 Spacer()
 
                 Button(action: onGetStarted) {

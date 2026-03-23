@@ -9,3 +9,6 @@ struct ChatPreview: Identifiable {
     let avatarSystemImage: String
 }
 
+struct ChatMenuOptions {
+    static let items = ["Edit Chats", "Sent Requests", "Received Requests"]
+}

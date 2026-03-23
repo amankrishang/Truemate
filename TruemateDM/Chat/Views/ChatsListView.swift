@@ -5,7 +5,7 @@ struct ChatsListView: View {
     @State private var showOptionsMenu = false
     @State private var showMessageView = false
     @State private var selectedContactName = ""
-    private let menuOptions = ["Edit Chats", "Sent Requests", "Received Requests"]
+    private let menuOptions = ChatMenuOptions.items
 
     var body: some View {
         NavigationStack {

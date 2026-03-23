@@ -16,9 +16,9 @@ struct EditPostView: View {
 
     @State private var monthlyRent: String = ""
 
-    let propertyTypes = ["Apartment", "House", "Studio", "Villa", "PG"]
-    let roomTypes = ["Single", "Double", "Triple", "Shared"]
-    let genderOptions = ["Male", "Female", "Any"]
+    let propertyTypes = PostFormOptions.propertyTypes
+    let roomTypes = PostFormOptions.roomTypes
+    let genderOptions = PostFormOptions.genderOptions
 
     var body: some View {
         VStack(spacing: 0) {
