@@ -1,15 +1,46 @@
 import SwiftUI
 
 struct AccountManagementView: View {
-    @Environment(\.dismiss) var dismiss
+    @Binding var isPresented: Bool
     @State private var showDeleteConfirmation = false
     @State private var showPersonalInformation = false
     @State private var showPreferences = false
+    
+    private var hasCurrentUser: Bool {
+        User.currentUser != nil
+    }
+    
+    private var accountRows: [SettingsRow] {
+        [
+            SettingsRow(
+                icon: "person.circle.fill",
+                iconColor: .blue,
+                label: "Personal Information",
+                showChevron: true,
+                action: {
+                    if hasCurrentUser {
+                        showPersonalInformation = true
+                    }
+                }
+            ),
+            SettingsRow(
+                icon: "house.fill",
+                iconColor: .blue,
+                label: "Preferences",
+                showChevron: true,
+                action: {
+                    if hasCurrentUser {
+                        showPreferences = true
+                    }
+                }
+            )
+        ]
+    }
 
     var body: some View {
         VStack(spacing: 0) {
             HStack {
-                Button(action: { dismiss() }) {
+                Button(action: { isPresented = false }) {
                     ZStack {
                         Circle()
                             .fill(Color(.systemGray5))
@@ -38,19 +69,9 @@ struct AccountManagementView: View {
             ScrollView {
                 VStack(spacing: 0) {
                     VStack(spacing: 0) {
-                        AccountMenuRow(
-                            icon: "person.circle.fill",
-                            iconColor: .blue,
-                            label: "Personal Information",
-                            action: { showPersonalInformation = true }
-                        )
+                        accountMenuRow(accountRows[0])
                         Divider().padding(.leading, 54)
-                        AccountMenuRow(
-                            icon: "house.fill",
-                            iconColor: .blue,
-                            label: "Preferences",
-                            action: { showPreferences = true }
-                        )
+                        accountMenuRow(accountRows[1])
                     }
                     .background(Color.white)
                     .cornerRadius(16)
@@ -71,7 +92,11 @@ struct AccountManagementView: View {
 
                             Spacer()
 
-                            Button(action: { showDeleteConfirmation = true }) {
+                            Button(action: {
+                                if hasCurrentUser {
+                                    showDeleteConfirmation = true
+                                }
+                            }) {
                                 Text("Delete")
                                     .font(.system(size: 16, weight: .medium))
                                     .foregroundColor(.red)
@@ -113,10 +138,10 @@ struct AccountManagementView: View {
         .background(Color(.systemGray6))
         .navigationBarHidden(true)
         .sheet(isPresented: $showPersonalInformation) {
-            PersonalInformationView()
+            PersonalInformationView(isPresented: $showPersonalInformation)
         }
         .sheet(isPresented: $showPreferences) {
-            PreferencesView()
+            PreferencesView(isPresented: $showPreferences)
         }
         .confirmationDialog(
             "Delete Account",
@@ -124,37 +149,36 @@ struct AccountManagementView: View {
             titleVisibility: .visible
         ) {
             Button("Delete", role: .destructive) {
+                guard let current = User.currentUser else { return }
+                User.allUsers.removeAll { $0.id == current.id }
+                User.currentUser = nil
+                isPresented = false
             }
             Button("Cancel", role: .cancel) {}
         } message: {
             Text("This action is permanent and cannot be undone.")
         }
     }
-}
-
-struct AccountMenuRow: View {
-    let icon: String
-    let iconColor: Color
-    let label: String
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
+    
+    private func accountMenuRow(_ row: SettingsRow) -> some View {
+        Button(action: row.action) {
             HStack(spacing: 14) {
-                Image(systemName: icon)
+                Image(systemName: row.icon)
                     .font(.system(size: 20))
-                    .foregroundColor(iconColor)
+                    .foregroundColor(row.iconColor)
                     .frame(width: 28)
 
-                Text(label)
+                Text(row.label)
                     .font(.system(size: 15))
                     .foregroundColor(.primary)
 
                 Spacer()
 
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 13))
-                    .foregroundColor(Color(.systemGray3))
+                if row.showChevron {
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 13))
+                        .foregroundColor(Color(.systemGray3))
+                }
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 16)
@@ -163,5 +187,5 @@ struct AccountMenuRow: View {
 }
 
 #Preview {
-    AccountManagementView()
+    AccountManagementView(isPresented: .constant(true))
 }

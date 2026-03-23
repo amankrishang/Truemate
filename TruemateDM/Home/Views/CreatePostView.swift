@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct CreatePostView: View {
-    @Environment(\.dismiss) var dismiss
+    @Binding var isPresented: Bool
     var onPostCreated: (() -> Void)? = nil
 
     @State private var propertyType: String = "Apartment"
@@ -24,7 +24,7 @@ struct CreatePostView: View {
     var body: some View {
         VStack(spacing: 0) {
             HStack {
-                Button(action: { dismiss() }) {
+                Button(action: { isPresented = false }) {
                     ZStack {
                         Circle()
                             .fill(Color(.systemGray5))
@@ -189,7 +189,7 @@ struct CreatePostView: View {
 
     private func handleSubmit() {
         onPostCreated?()
-        dismiss()
+        isPresented = false
     }
 }
 
@@ -280,5 +280,5 @@ struct ClearableInputRow: View {
 }
 
 #Preview {
-    CreatePostView()
+    CreatePostView(isPresented: .constant(true))
 }

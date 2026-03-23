@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct SuitabilityDetailsView: View {
-    @Environment(\.dismiss) var dismiss
+    @Binding var isPresented: Bool
 
     let matchName: String = "Abhishek"
 
@@ -28,7 +28,7 @@ struct SuitabilityDetailsView: View {
                 VStack(spacing: 0) {
                     VStack(alignment: .leading, spacing: 0) {
                         HStack {
-                            Button(action: { dismiss() }) {
+                            Button(action: { isPresented = false }) {
                                 ZStack {
                                     Circle()
                                         .fill(Color(.systemGray5))
@@ -71,7 +71,8 @@ struct SuitabilityDetailsView: View {
                         .padding(.bottom, 10)
 
                         VStack(spacing: 0) {
-                            ForEach(Array(potentialMatches.enumerated()), id: \.offset) { index, item in
+                            ForEach(potentialMatches.indices, id: \.self) { index in
+                                let item = potentialMatches[index]
                                 Text(item)
                                     .font(.system(size: 16))
                                     .foregroundColor(.primary)
@@ -102,7 +103,8 @@ struct SuitabilityDetailsView: View {
                         .padding(.bottom, 10)
 
                         VStack(spacing: 0) {
-                            ForEach(Array(potentialMismatches.enumerated()), id: \.offset) { index, item in
+                            ForEach(potentialMismatches.indices, id: \.self) { index in
+                                let item = potentialMismatches[index]
                                 Text(item)
                                     .font(.system(size: 16))
                                     .foregroundColor(.primary)
@@ -133,5 +135,5 @@ struct SuitabilityDetailsView: View {
 }
 
 #Preview {
-    SuitabilityDetailsView()
+    SuitabilityDetailsView(isPresented: .constant(true))
 }

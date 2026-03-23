@@ -1,27 +1,8 @@
 import SwiftUI
 
-struct ListingMatch: Identifiable {
-    let id = UUID()
-    let name: String
-    let lookingFor: String
-    let pricePerMonth: Int
-    let timeAgo: String
-    let imageName: String
-}
-
-struct FlatmateMatch: Identifiable {
-    let id = UUID()
-    let name: String
-    let lookingFor: String
-    let matchPercent: Int
-    let pricePerMonth: Int
-    let timeAgo: String
-}
-
 struct AppStoreStyleTabView: View {
     @State private var hasCreatedPost = false
     @State private var selectedTab = 0
-    @StateObject private var chatInbox = ChatInbox()
 
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -55,12 +36,11 @@ struct AppStoreStyleTabView: View {
                 .toolbarBackground(.visible, for: .tabBar)
                 .tag(2)
         }
-        .environmentObject(chatInbox)
         .onReceive(NotificationCenter.default.publisher(for: .switchToChatsTab)) { _ in
             selectedTab = 1
         }
         .onReceive(NotificationCenter.default.publisher(for: .didSendAbhishekRequest)) { _ in
-            chatInbox.addAbhishekIfNeeded()
+            ChatInbox.shared.addAbhishekIfNeeded()
             selectedTab = 1
         }
     }
@@ -70,11 +50,7 @@ struct MatchesHomeView: View {
     var onCreatePostSuccess: () -> Void
     @State private var showCreatePost = false
 
-    let listings: [ListingMatch] = [
-        ListingMatch(name: "Vinay Bansal", lookingFor: "Looking for 2 BHK Apartment", pricePerMonth: 9500, timeAgo: "2h ago", imageName: "person.crop.circle.fill"),
-        ListingMatch(name: "Lady Gaga", lookingFor: "Looking for 1RK Apartment", pricePerMonth: 18000, timeAgo: "8h ago", imageName: "person.crop.circle.fill"),
-        ListingMatch(name: "Abhishek Gupta", lookingFor: "Looking for 2 BHK Apartment", pricePerMonth: 9500, timeAgo: "1d ago", imageName: "person.crop.circle.fill")
-    ]
+    let listings = ListingMatch.sample
 
     var body: some View {
         ScrollView {
@@ -181,7 +157,8 @@ struct MatchesHomeView: View {
                 .padding(.top, 4)
 
                 VStack(spacing: 0) {
-                    ForEach(Array(listings.enumerated()), id: \.element.id) { index, listing in
+                    ForEach(listings.indices, id: \.self) { index in
+                        let listing = listings[index]
                         ListingRowView(listing: listing)
                         if index < listings.count - 1 {
                             Divider()
@@ -198,7 +175,7 @@ struct MatchesHomeView: View {
         .background(Color(.systemGray6))
         .navigationBarHidden(true)
         .sheet(isPresented: $showCreatePost) {
-            CreatePostView(onPostCreated: {
+            CreatePostView(isPresented: $showCreatePost, onPostCreated: {
                 onCreatePostSuccess()
             })
         }
@@ -211,11 +188,7 @@ struct MatchesWithPostView: View {
     @State private var showAllFlatmates = false
     @State private var showEditPost = false
 
-    let flatmates: [FlatmateMatch] = [
-        FlatmateMatch(name: "Vinay Bansal", lookingFor: "Looking for 2 BHK Apartment", matchPercent: 90, pricePerMonth: 9500, timeAgo: "2h ago"),
-        FlatmateMatch(name: "Lady Gaga", lookingFor: "Looking for 1RK Apartment", matchPercent: 90, pricePerMonth: 18000, timeAgo: "8h ago"),
-        FlatmateMatch(name: "Abhishek Gupta", lookingFor: "Looking for 2 BHK Apartment", matchPercent: 38, pricePerMonth: 9500, timeAgo: "1d ago")
-    ]
+    let flatmates = FlatmateMatch.sample
 
     var body: some View {
         ScrollView {
@@ -382,15 +355,15 @@ struct MatchesWithPostView: View {
         .background(Color(.systemGray6))
         .navigationBarHidden(true)
         .sheet(isPresented: $showCreatePost) {
-            CreatePostView(onPostCreated: {
+            CreatePostView(isPresented: $showCreatePost, onPostCreated: {
                 onCreatePostSuccess()
             })
         }
         .sheet(isPresented: $showAllFlatmates) {
-            AllFlatmatesView()
+            AllFlatmatesView(isPresented: $showAllFlatmates)
         }
         .sheet(isPresented: $showEditPost) {
-            EditPostView()
+            EditPostView(isPresented: $showEditPost)
         }
     }
 }
@@ -520,10 +493,4 @@ struct RoundedCorner: Shape {
 
 #Preview {
     AppStoreStyleTabView()
-}
-
-
-extension Notification.Name {
-    static let switchToChatsTab = Notification.Name("switchToChatsTab")
-    static let didSendAbhishekRequest = Notification.Name("didSendAbhishekRequest")
 }

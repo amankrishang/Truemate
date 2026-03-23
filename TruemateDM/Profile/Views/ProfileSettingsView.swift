@@ -1,18 +1,14 @@
 import SwiftUI
 
-struct SettingsRow: Identifiable {
-    let id = UUID()
-    let icon: String
-    let iconColor: Color
-    let label: String
-    let showChevron: Bool
-    let action: () -> Void
-}
-
 struct ProfileSettingsView: View {
     @State private var showAccountManagement = false
     @State private var showSecurityPrivacy = false
     @State private var showAppPreferences = false
+    
+    private var userName: String {
+        let name = User.currentUser?.fullName.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        return name.isEmpty ? "Profile" : name
+    }
 
     var body: some View {
         ScrollView {
@@ -38,7 +34,7 @@ struct ProfileSettingsView: View {
                     }
 
                     HStack(spacing: 4) {
-                        Text("Varnika Singh")
+                        Text(userName)
                             .font(.system(size: 16, weight: .semibold))
                             .foregroundColor(.primary)
                         Image(systemName: "checkmark.seal.fill")
@@ -49,18 +45,18 @@ struct ProfileSettingsView: View {
                 .frame(maxWidth: .infinity)
                 .padding(.bottom, 28)
 
-                SettingsSection(title: "More Controls", rows: [
+                settingsSection(title: "More Controls", rows: [
                     SettingsRow(icon: "gearshape", iconColor: .gray, label: "Account Management", showChevron: true, action: { showAccountManagement = true }),
                     SettingsRow(icon: "lock.fill", iconColor: .blue, label: "Security & Privacy", showChevron: true, action: { showSecurityPrivacy = true }),
                     SettingsRow(icon: "slider.horizontal.3", iconColor: .blue, label: "App Preferences", showChevron: true, action: { showAppPreferences = true })
                 ])
 
-                SettingsSection(title: "Support", rows: [
+                settingsSection(title: "Support", rows: [
                     SettingsRow(icon: "plus.circle.fill", iconColor: .blue, label: "Suggest new features", showChevron: true, action: {}),
                     SettingsRow(icon: "info.circle.fill", iconColor: .blue, label: "About TrueMate", showChevron: true, action: {})
                 ])
 
-                SettingsSection(title: "Other", rows: [
+                settingsSection(title: "Other", rows: [
                     SettingsRow(icon: "square.and.arrow.up", iconColor: .blue, label: "Share our app", showChevron: false, action: {}),
                     SettingsRow(icon: "doc.fill", iconColor: .blue, label: "Legal & Compliance", showChevron: true, action: {})
                 ])
@@ -81,22 +77,17 @@ struct ProfileSettingsView: View {
         .background(Color(.systemGray6))
         .navigationBarHidden(true)
         .sheet(isPresented: $showAccountManagement) {
-            AccountManagementView()
+            AccountManagementView(isPresented: $showAccountManagement)
         }
         .sheet(isPresented: $showSecurityPrivacy) {
-            SecurityPrivacyView()
+            SecurityPrivacyView(isPresented: $showSecurityPrivacy)
         }
         .sheet(isPresented: $showAppPreferences) {
-            SecurityPrivacyView()
+            PreferencesView(isPresented: $showAppPreferences)
         }
     }
-}
-
-struct SettingsSection: View {
-    let title: String
-    let rows: [SettingsRow]
-
-    var body: some View {
+    
+    private func settingsSection(title: String, rows: [SettingsRow]) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             Text(title)
                 .font(.system(size: 13, weight: .regular))
@@ -105,7 +96,8 @@ struct SettingsSection: View {
                 .padding(.bottom, 6)
 
             VStack(spacing: 0) {
-                ForEach(Array(rows.enumerated()), id: \.element.id) { index, row in
+                ForEach(rows.indices, id: \.self) { index in
+                    let row = rows[index]
                     Button(action: row.action) {
                         HStack(spacing: 14) {
                             Image(systemName: row.icon)

@@ -1,20 +1,28 @@
 import SwiftUI
 
 struct PersonalInformationView: View {
-    @Environment(\.dismiss) var dismiss
+    @Binding var isPresented: Bool
 
     @State private var locationSharing: Bool = true
     @State private var showEditName = false
 
-    let name = "Varnika Singh"
-    let email = "good@example.com"
-    let phone = "+91 555 444 3333"
-    let dob = "5 June 1999"
+    private var name: String {
+        User.currentUser?.fullName ?? ""
+    }
+    private var email: String {
+        User.currentUser?.email ?? ""
+    }
+    private var phone: String {
+        User.currentUser?.phoneNumber ?? ""
+    }
+    private var dob: String {
+        ""
+    }
 
     var body: some View {
         VStack(spacing: 0) {
             HStack {
-                Button(action: { dismiss() }) {
+                Button(action: { isPresented = false }) {
                     ZStack {
                         Circle()
                             .fill(Color(.systemGray5))
@@ -108,7 +116,7 @@ struct PersonalInformationView: View {
         .background(Color(.systemGray6))
         .navigationBarHidden(true)
         .sheet(isPresented: $showEditName) {
-            EditNameView()
+            EditNameView(isPresented: $showEditName)
         }
     }
 }
@@ -139,5 +147,5 @@ struct InfoNavigationRow: View {
 }
 
 #Preview {
-    PersonalInformationView()
+    PersonalInformationView(isPresented: .constant(true))
 }

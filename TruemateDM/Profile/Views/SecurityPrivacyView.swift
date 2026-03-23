@@ -1,13 +1,13 @@
 import SwiftUI
 
 struct SecurityPrivacyView: View {
-    @Environment(\.dismiss) var dismiss
+    @Binding var isPresented: Bool
     @State private var notificationsEnabled: Bool = true
 
     var body: some View {
         VStack(spacing: 0) {
             HStack {
-                Button(action: { dismiss() }) {
+                Button(action: { isPresented = false }) {
                     ZStack {
                         Circle()
                             .fill(Color(.systemGray5))
@@ -90,5 +90,5 @@ struct SecurityPrivacyView: View {
 }
 
 #Preview {
-    SecurityPrivacyView()
+    SecurityPrivacyView(isPresented: .constant(true))
 }

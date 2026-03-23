@@ -1,51 +1,17 @@
 import SwiftUI
 
-struct FlatmateProfile {
-    let name: String
-    let isVerified: Bool
-    let suitabilityPercent: Int
-    let matchTags: [MatchTag]
-    let gender: String
-    let flatType: String
-    let lookingFor: String
-    let flatRent: Int
-    let age: Int
-    var isSaved: Bool
-}
-
-struct MatchTag: Identifiable {
-    let id = UUID()
-    let label: String
-    let icon: String
-}
-
 struct FlatmateProfileView: View {
-    @Environment(\.dismiss) var dismiss
+    @Binding var isPresented: Bool
 
     @State private var showSuitabilityDetails = false
 
-    @State var profile: FlatmateProfile = FlatmateProfile(
-        name: "Abhishek Gupta",
-        isVerified: true,
-        suitabilityPercent: 38,
-        matchTags: [
-            MatchTag(label: "Night Owl", icon: "moon.fill"),
-            MatchTag(label: "Budget", icon: "dollarsign.circle.fill"),
-            MatchTag(label: "Pet Lover", icon: "pawprint.fill")
-        ],
-        gender: "Male",
-        flatType: "3 BHK",
-        lookingFor: "Male",
-        flatRent: 12000,
-        age: 22,
-        isSaved: false
-    )
+    @State var profile = FlatmateProfile.abhishek
 
     var body: some View {
         ScrollView {
             VStack(spacing: 0) {
                 HStack {
-                    Button(action: { dismiss() }) {
+                    Button(action: { isPresented = false }) {
                         ZStack {
                             Circle()
                                 .fill(Color.white)
@@ -98,7 +64,7 @@ struct FlatmateProfileView: View {
 
                 Button(action: {
                     NotificationCenter.default.post(name: .didSendAbhishekRequest, object: nil)
-                    dismiss()
+                    isPresented = false
                 }) {
                     Text("Send Message Request")
                         .font(.system(size: 16, weight: .semibold))
@@ -192,7 +158,7 @@ struct FlatmateProfileView: View {
         .background(Color(.systemGray6))
         .navigationBarHidden(true)
         .sheet(isPresented: $showSuitabilityDetails) {
-            SuitabilityDetailsView()
+            SuitabilityDetailsView(isPresented: $showSuitabilityDetails)
         }
     }
 }
@@ -217,5 +183,5 @@ struct BasicInfoRow: View {
 }
 
 #Preview {
-    FlatmateProfileView()
+    FlatmateProfileView(isPresented: .constant(true))
 }

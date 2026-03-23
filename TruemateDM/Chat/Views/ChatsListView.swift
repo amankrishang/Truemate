@@ -1,17 +1,10 @@
 import SwiftUI
 
-struct ChatPreview: Identifiable {
-    let id = UUID()
-    let name: String
-    let lastMessage: String
-    let hasUnread: Bool
-    let avatarColor: Color
-    let avatarSystemImage: String
-}
-
 struct ChatsListView: View {
-    @EnvironmentObject private var chatInbox: ChatInbox
+    @ObservedObject private var chatInbox = ChatInbox.shared
     @State private var showOptionsMenu = false
+    @State private var showMessageView = false
+    @State private var selectedContactName = ""
     private let menuOptions = ["Edit Chats", "Sent Requests", "Received Requests"]
 
     var body: some View {
@@ -65,9 +58,13 @@ struct ChatsListView: View {
                             .padding(.top, 60)
                         } else {
                             VStack(spacing: 0) {
-                                ForEach(Array(chatInbox.chats.enumerated()), id: \.element.id) { index, chat in
-                                    NavigationLink(destination: SendMessageRequestView(contactName: chat.name)) {
-                                        ChatRowView(chat: chat)
+                                ForEach(chatInbox.chats.indices, id: \.self) { index in
+                                    let chat = chatInbox.chats[index]
+                                    Button(action: {
+                                        selectedContactName = chat.name
+                                        showMessageView = true
+                                    }) {
+                                        chatRow(chat)
                                     }
                                     .buttonStyle(.plain)
 
@@ -89,7 +86,8 @@ struct ChatsListView: View {
                         .onTapGesture { showOptionsMenu = false }
 
                     VStack(spacing: 0) {
-                        ForEach(Array(menuOptions.enumerated()), id: \.offset) { index, title in
+                        ForEach(menuOptions.indices, id: \.self) { index in
+                            let title = menuOptions[index]
                             menuRow(title)
                             if index < menuOptions.count - 1 {
                                 Divider().padding(.leading, 56)
@@ -106,14 +104,14 @@ struct ChatsListView: View {
                     .frame(width: 290)
                     .padding(.top, 72)
                     .padding(.trailing, 18)
-                    .transition(.opacity.combined(with: .scale(scale: 0.97, anchor: .topTrailing)))
                 }
             }
-            .animation(.easeInOut(duration: 0.18), value: showOptionsMenu)
+        }
+        .sheet(isPresented: $showMessageView) {
+            SendMessageRequestView(isPresented: $showMessageView, contactName: selectedContactName)
         }
     }
 
-    @ViewBuilder
     private func menuRow(_ title: String) -> some View {
         Button(action: { showOptionsMenu = false }) {
             HStack(spacing: 12) {
@@ -130,12 +128,8 @@ struct ChatsListView: View {
         }
         .buttonStyle(.plain)
     }
-}
-
-struct ChatRowView: View {
-    let chat: ChatPreview
-
-    var body: some View {
+    
+    private func chatRow(_ chat: ChatPreview) -> some View {
         HStack(spacing: 14) {
             Circle()
                 .fill(chat.hasUnread ? Color.blue : Color.clear)
@@ -179,5 +173,4 @@ struct ChatRowView: View {
 
 #Preview {
     ChatsListView()
-        .environmentObject(ChatInbox())
 }

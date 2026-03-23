@@ -1,23 +1,20 @@
 import SwiftUI
-import SwiftData
 
 struct HomeLifestyleQuizView: View {
-    @Environment(\.modelContext) private var modelContext
-    @Query private var users: [User]
-    @Query private var seekerProfiles: [FlatSeekerProfile]
-
-    @State private var selectedOption: String? = nil
+    @State private var currentIndex = 0
+    @State private var selections: [String: String] = [:]
 
     var onNext: (() -> Void)? = nil
 
-    let options = [
-        "Mostly quiet + prefer personal space",
-        "Some noise is fine",
-        "I sleep anywhere",
-        "I use headphones while sleeping"
-    ]
-
-    private var currentUser: User? { users.first }
+    private var questions: [QuizQuestion] { QuizData.questions }
+    private var totalQuestions: Int { questions.count }
+    private var currentQuestion: QuizQuestion { questions[currentIndex] }
+    private var progress: Double {
+        guard totalQuestions > 0 else { return 0 }
+        return Double(currentIndex + 1) / Double(totalQuestions)
+    }
+    private var selectedAnswerForCurrent: String? { selections[currentQuestion.id] }
+    private var isLastQuestion: Bool { currentIndex == totalQuestions - 1 }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -28,31 +25,31 @@ struct HomeLifestyleQuizView: View {
                         .frame(height: 4)
                     RoundedRectangle(cornerRadius: 4)
                         .fill(Color(red: 0.22, green: 0.42, blue: 0.98))
-                        .frame(width: geo.size.width * 0.05, height: 4)
+                        .frame(width: geo.size.width * progress, height: 4)
                 }
             }
             .frame(height: 4)
             .padding(.horizontal, 20)
             .padding(.top, 16)
 
-            Text("What best describes your home lifestyle?")
+            Text(currentQuestion.question)
                 .font(.system(size: 26, weight: .bold))
                 .foregroundColor(Color(red: 0.22, green: 0.42, blue: 0.98))
                 .padding(.horizontal, 20)
                 .padding(.top, 32)
 
-            Text("Select one")
+            Text(currentQuestion.subtitle)
                 .font(.system(size: 14, weight: .regular))
                 .foregroundColor(.black)
                 .padding(.horizontal, 20)
                 .padding(.top, 8)
 
             VStack(spacing: 14) {
-                ForEach(options, id: \.self) { option in
+                ForEach(currentQuestion.options) { option in
                     Button(action: {
-                        selectedOption = option
+                        selections[currentQuestion.id] = option.text
                     }) {
-                        Text(option)
+                        Text(option.text)
                             .font(.system(size: 15, weight: .regular))
                             .foregroundColor(.black)
                             .frame(maxWidth: .infinity)
@@ -61,10 +58,10 @@ struct HomeLifestyleQuizView: View {
                             .overlay(
                                 RoundedRectangle(cornerRadius: 14)
                                     .stroke(
-                                        selectedOption == option
+                                        selectedAnswerForCurrent == option.text
                                             ? Color(red: 0.22, green: 0.42, blue: 0.98)
                                             : Color(red: 0.22, green: 0.42, blue: 0.98).opacity(0.4),
-                                        lineWidth: selectedOption == option ? 2 : 1
+                                        lineWidth: selectedAnswerForCurrent == option.text ? 2 : 1
                                     )
                             )
                             .clipShape(RoundedRectangle(cornerRadius: 14))
@@ -79,7 +76,7 @@ struct HomeLifestyleQuizView: View {
             HStack {
                 Spacer()
                 Button(action: handleNext) {
-                    Text("Next")
+                    Text(isLastQuestion ? "Finish" : "Next")
                         .font(.system(size: 17, weight: .semibold))
                         .foregroundColor(.white)
                         .padding(.horizontal, 40)
@@ -87,8 +84,8 @@ struct HomeLifestyleQuizView: View {
                         .background(Color(red: 0.22, green: 0.42, blue: 0.98))
                         .clipShape(Capsule())
                 }
-                .disabled(selectedOption == nil)
-                .opacity(selectedOption == nil ? 0.5 : 1)
+                .disabled(selectedAnswerForCurrent == nil)
+                .opacity(selectedAnswerForCurrent == nil ? 0.5 : 1)
             }
             .padding(.horizontal, 20)
             .padding(.bottom, 32)
@@ -98,42 +95,20 @@ struct HomeLifestyleQuizView: View {
     }
 
     private func handleNext() {
-        guard let user = currentUser, let option = selectedOption else { return }
+        guard selectedAnswerForCurrent != nil else { return }
 
-        let profile: FlatSeekerProfile
-        if let existing = seekerProfiles.first(where: { $0.userID == user.id }) {
-            profile = existing
-        } else {
-            let created = FlatSeekerProfile(
-                userID: user.id,
-                fullName: user.fullName,
-                email: user.email,
-                phoneNumber: user.phoneNumber,
-                age: user.age
-            )
-            modelContext.insert(created)
-            profile = created
+        if isLastQuestion {
+            saveAnswers()
+            onNext?()
+            return
         }
 
-        profile.noiseLevel = mapNoiseLevel(from: option)
-
-        try? modelContext.save()
-        onNext?()
+        currentIndex += 1
     }
 
-    private func mapNoiseLevel(from option: String) -> String {
-        switch option {
-        case "Mostly quiet + prefer personal space":
-            return "quiet"
-        case "Some noise is fine":
-            return "moderate"
-        case "I sleep anywhere":
-            return "moderate"
-        case "I use headphones while sleeping":
-            return "noisy"
-        default:
-            return "moderate"
-        }
+    private func saveAnswers() {
+        guard let user = User.currentUser else { return }
+        QuizAnswerStore.answersByUser[user.id] = selections
     }
 }
 

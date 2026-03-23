@@ -1,5 +1,4 @@
 import SwiftUI
-import SwiftData
 
 @main
 struct TruemateApp: App {
@@ -8,15 +7,10 @@ struct TruemateApp: App {
         WindowGroup {
             AuthEntryView()
         }
-        .modelContainer(for: [
-            User.self,
-            FlatSeekerProfile.self,
-            FlatOwnerProfile.self,
-            FlatmateListing.self,
-            FlatSeekerPost.self,
-            SavedListing.self,
-            MatchRequest.self,
-            Message.self
-        ])
     }
+}
+
+extension Notification.Name {
+    static let switchToChatsTab = Notification.Name("switchToChatsTab")
+    static let didSendAbhishekRequest = Notification.Name("didSendAbhishekRequest")
 }

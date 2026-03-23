@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct PreferencesView: View {
-    @Environment(\.dismiss) var dismiss
+    @Binding var isPresented: Bool
 
     enum LookingForTab: String, CaseIterable {
         case room = "Room"
@@ -47,7 +47,7 @@ struct PreferencesView: View {
     var body: some View {
         VStack(spacing: 0) {
             HStack {
-                Button(action: { dismiss() }) {
+                Button(action: { isPresented = false }) {
                     ZStack {
                         Circle()
                             .fill(Color(.systemGray5))
@@ -218,5 +218,5 @@ struct PrefPickerRow: View {
 }
 
 #Preview {
-    PreferencesView()
+    PreferencesView(isPresented: .constant(true))
 }

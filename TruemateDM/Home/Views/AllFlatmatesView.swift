@@ -1,29 +1,13 @@
 import SwiftUI
 
-struct Flatmate: Identifiable {
-    let id = UUID()
-    let name: String
-    let lookingFor: String
-    let location: String
-    let pricePerMonth: Int
-    let matchPercent: Int
-    let isVerified: Bool
-    var isSaved: Bool
-}
-
 struct AllFlatmatesView: View {
-    @Environment(\.dismiss) var dismiss
+    @Binding var isPresented: Bool
     @State private var selectedTab: FlatmateTab = .recommended
     @State private var showAbhishekProfile = false
     @State private var showFilterOptions = false
     @State private var selectedSort: SortOption = .highestBudget
 
-    @State private var flatmates: [Flatmate] = [
-        Flatmate(name: "Vinay Bansal", lookingFor: "Looking for 2 BHK Apartment", location: "Greater Noida", pricePerMonth: 12000, matchPercent: 90, isVerified: true, isSaved: true),
-        Flatmate(name: "Shalini", lookingFor: "Looking for 1RK Apartment", location: "Botanical Garden", pricePerMonth: 8500, matchPercent: 90, isVerified: true, isSaved: true),
-        Flatmate(name: "Abhishek Gupta", lookingFor: "Looking for 2 BHK Apartment", location: "Beta 3", pricePerMonth: 12000, matchPercent: 38, isVerified: true, isSaved: false),
-        Flatmate(name: "Pranjal Mishra", lookingFor: "Looking for 2 BHK Apartment", location: "Greater Noida", pricePerMonth: 12000, matchPercent: 50, isVerified: true, isSaved: false)
-    ]
+    @State private var flatmates = Flatmate.sample
 
     enum FlatmateTab { case recommended, saved }
 
@@ -44,14 +28,20 @@ struct AllFlatmatesView: View {
     }
 
     var displayedFlatmates: [Flatmate] {
-        selectedTab == .recommended ? flatmates : flatmates.filter { $0.isSaved }
+        if selectedTab == .recommended {
+            return flatmates
+        } else {
+            return flatmates.filter { $0.isSaved }
+        }
     }
+
+     
 
     var body: some View {
         ZStack(alignment: .topTrailing) {
             VStack(spacing: 0) {
                 HStack {
-                    Button(action: { dismiss() }) {
+                    Button(action: { isPresented = false }) {
                         ZStack {
                             Circle()
                                 .fill(Color.white)
@@ -88,10 +78,10 @@ struct AllFlatmatesView: View {
 
                 HStack(spacing: 0) {
                     SegmentButton(title: "Recommended flatmates", isSelected: selectedTab == .recommended) {
-                        withAnimation(.easeInOut(duration: 0.2)) { selectedTab = .recommended }
+                        selectedTab = .recommended
                     }
                     SegmentButton(title: "Saved flatmates", isSelected: selectedTab == .saved) {
-                        withAnimation(.easeInOut(duration: 0.2)) { selectedTab = .saved }
+                        selectedTab = .saved
                     }
                 }
                 .background(Color(.systemGray5))
@@ -101,7 +91,7 @@ struct AllFlatmatesView: View {
 
                 ScrollView {
                     VStack(spacing: 12) {
-                        ForEach(Array(displayedFlatmates.enumerated()), id: \.element.id) { _, flatmate in
+                        ForEach(displayedFlatmates, id: \.id) { flatmate in
                             FlatmateDetailCard(
                                 flatmate: flatmate,
                                 onTapCard: {
@@ -129,7 +119,8 @@ struct AllFlatmatesView: View {
                     .onTapGesture { showFilterOptions = false }
 
                 VStack(spacing: 0) {
-                    ForEach(Array(SortOption.allCases.enumerated()), id: \.element.title) { index, option in
+                    ForEach(SortOption.allCases.indices, id: \.self) { index in
+                        let option = SortOption.allCases[index]
                         filterRow(option)
                         if index < SortOption.allCases.count - 1 {
                             Divider().padding(.leading, 56)
@@ -146,17 +137,14 @@ struct AllFlatmatesView: View {
                 .frame(width: 290)
                 .padding(.top, 72)
                 .padding(.trailing, 18)
-                .transition(.opacity.combined(with: .scale(scale: 0.97, anchor: .topTrailing)))
             }
         }
         .navigationBarHidden(true)
         .sheet(isPresented: $showAbhishekProfile) {
-            FlatmateProfileView()
+            FlatmateProfileView(isPresented: $showAbhishekProfile)
         }
-        .animation(.easeInOut(duration: 0.18), value: showFilterOptions)
     }
 
-    @ViewBuilder
     private func filterRow(_ option: SortOption) -> some View {
         Button {
             selectedSort = option
@@ -298,5 +286,5 @@ struct FlatmateDetailCard: View {
 }
 
 #Preview {
-    AllFlatmatesView()
+    AllFlatmatesView(isPresented: .constant(true))
 }

@@ -1,14 +1,10 @@
 import SwiftUI
-import SwiftData
 
 struct SignInView: View {
-    @Environment(\.modelContext) private var modelContext
-    @Query private var users: [User]
-
-    @State private var emailOrPhone: String = ""
-    @State private var password: String = ""
-    @State private var showPassword: Bool = false
-    @State private var errorMessage: String = ""
+    @State private var emailOrPhone = ""
+    @State private var password = ""
+    @State private var showPassword = false
+    @State private var errorMessage = ""
 
     var onSignInSuccess: (() -> Void)? = nil
     var onSignUpTap: (() -> Void)? = nil
@@ -181,25 +177,23 @@ struct SignInView: View {
 
     private func signIn() {
         let identifier = emailOrPhone.trimmingCharacters(in: .whitespacesAndNewlines)
-        let pwd = password.trimmingCharacters(in: .whitespacesAndNewlines)
+        let isPasswordEmpty = password.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
 
         guard !identifier.isEmpty else {
             errorMessage = "Please enter phone or email."
             return
         }
 
-        guard !pwd.isEmpty else {
+        guard !isPasswordEmpty else {
             errorMessage = "Please enter password."
             return
         }
 
-        if let existing = users.first(where: {
+        if let existing = User.allUsers.first(where: {
             $0.email.caseInsensitiveCompare(identifier) == .orderedSame || $0.phoneNumber == identifier
         }) {
-            if existing.activeModeRaw.isEmpty {
-                existing.activeMode = .both
-            }
             existing.isOnboardingComplete = false
+            User.currentUser = existing
         } else {
             let isEmail = identifier.contains("@")
             let user = User(
@@ -210,16 +204,12 @@ struct SignInView: View {
             )
             user.activeMode = .both
             user.isOnboardingComplete = false
-            modelContext.insert(user)
+            User.allUsers.append(user)
+            User.currentUser = user
         }
 
-        do {
-            try modelContext.save()
-            errorMessage = ""
-            onSignInSuccess?()
-        } catch {
-            errorMessage = "Could not sign in. Please try again."
-        }
+        errorMessage = ""
+        onSignInSuccess?()
     }
 }
 

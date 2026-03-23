@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct SendMessageRequestView: View {
-    @Environment(\.dismiss) var dismiss
+    @Binding var isPresented: Bool
 
     let contactName: String
 
@@ -9,14 +9,12 @@ struct SendMessageRequestView: View {
     @State private var messageText: String = ""
     @State private var isMessagingLocked: Bool = true
 
-    let messages: [ChatMessage] = [
-        ChatMessage(text: "Hey! I want to connect", isSent: true, time: "13:58")
-    ]
+    let messages = ChatMessage.sample
 
     var body: some View {
         VStack(spacing: 0) {
             HStack(spacing: 12) {
-                Button(action: { dismiss() }) {
+                Button(action: { isPresented = false }) {
                     ZStack {
                         Circle()
                             .fill(Color.white)
@@ -59,7 +57,7 @@ struct SendMessageRequestView: View {
                     VStack(spacing: 16) {
                         if showMatchRequestBanner {
                             MatchRequestBanner {
-                                withAnimation { showMatchRequestBanner = false }
+                                showMatchRequestBanner = false
                             }
                             .padding(.horizontal, 16)
                             .padding(.top, 16)
@@ -146,13 +144,6 @@ struct SendMessageRequestView: View {
     }
 }
 
-struct ChatMessage: Identifiable {
-    let id = UUID()
-    let text: String
-    let isSent: Bool
-    let time: String
-}
-
 struct MatchRequestBanner: View {
     let onOkay: () -> Void
 
@@ -204,5 +195,5 @@ struct MatchRequestBanner: View {
 }
 
 #Preview {
-    SendMessageRequestView(contactName: "Abhishek Gupta")
+    SendMessageRequestView(isPresented: .constant(true), contactName: "Abhishek Gupta")
 }

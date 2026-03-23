@@ -1,4 +1,3 @@
-import SwiftData
 import Foundation
 
 enum UserMode: String, Codable, CaseIterable {
@@ -23,38 +22,39 @@ enum UserMode: String, Codable, CaseIterable {
     }
 }
 
-@Model
 class User {
-    @Attribute(.unique) var id: UUID = UUID()
-    
-    // Profile info
+    var id: UUID = UUID()
+
     var fullName: String
     var email: String
     var phoneNumber: String
     var age: Int
     var profilePhotoURL: String?
-    
-    // App state
-    var activeModeRaw: String = UserMode.both.rawValue
-    var canFindFlats: Bool = true
-    var canFindFlatmates: Bool = true
+    var address: String
+    var country: String
+    var postalCode: String
+    var city: String
+    var aadhaarVerified: Bool
+
+    var activeMode: UserMode = .both
     var isOnboardingComplete: Bool = false
     
     var createdAt: Date = Date()
-    
-    var activeMode: UserMode {
-        get { UserMode(rawValue: activeModeRaw) ?? .both }
-        set { 
-            activeModeRaw = newValue.rawValue
-            canFindFlats = newValue == .findFlats || newValue == .both
-            canFindFlatmates = newValue == .findFlatmates || newValue == .both
-        }
-    }
     
     init(fullName: String = "", email: String = "", phoneNumber: String = "", age: Int = 25) {
         self.fullName = fullName
         self.email = email
         self.phoneNumber = phoneNumber
         self.age = age
+        self.address = ""
+        self.country = ""
+        self.postalCode = ""
+        self.city = ""
+        self.aadhaarVerified = false
     }
+}
+
+extension User {
+    static var allUsers: [User] = []
+    static var currentUser: User? = nil
 }

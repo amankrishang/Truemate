@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct EditPostView: View {
-    @Environment(\.dismiss) var dismiss
+    @Binding var isPresented: Bool
 
     @State private var propertyType: String = "Apartment"
     @State private var roomType: String = "Single"
@@ -23,7 +23,7 @@ struct EditPostView: View {
     var body: some View {
         VStack(spacing: 0) {
             HStack {
-                Button(action: { dismiss() }) {
+                Button(action: { isPresented = false }) {
                     ZStack {
                         Circle()
                             .fill(Color(.systemGray5))
@@ -188,10 +188,10 @@ struct EditPostView: View {
     }
 
     private func handleSave() {
-        dismiss()
+        isPresented = false
     }
 }
 
 #Preview {
-    EditPostView()
+    EditPostView(isPresented: .constant(true))
 }

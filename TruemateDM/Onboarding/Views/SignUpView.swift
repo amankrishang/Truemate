@@ -1,16 +1,12 @@
 import SwiftUI
-import SwiftData
 
 struct SignUpView: View {
-    @Environment(\.modelContext) private var modelContext
-    @Query private var users: [User]
-
-    @State private var name: String = ""
-    @State private var emailOrPhone: String = ""
-    @State private var password: String = ""
-    @State private var showPassword: Bool = false
-    @State private var agreedToTerms: Bool = false
-    @State private var errorMessage: String = ""
+    @State private var name = ""
+    @State private var emailOrPhone = ""
+    @State private var password = ""
+    @State private var showPassword = false
+    @State private var agreedToTerms = false
+    @State private var errorMessage = ""
 
     var onSignUpSuccess: (() -> Void)? = nil
     var onSignInTap: (() -> Void)? = nil
@@ -189,7 +185,7 @@ struct SignUpView: View {
             return
         }
 
-        let alreadyExists = users.contains(where: {
+        let alreadyExists = User.allUsers.contains(where: {
             $0.email.caseInsensitiveCompare(identifier) == .orderedSame || $0.phoneNumber == identifier
         })
 
@@ -207,16 +203,10 @@ struct SignUpView: View {
         )
         newUser.activeMode = .both
         newUser.isOnboardingComplete = false
-
-        modelContext.insert(newUser)
-
-        do {
-            try modelContext.save()
-            errorMessage = ""
-            onSignUpSuccess?()
-        } catch {
-            errorMessage = "Could not create account. Please try again."
-        }
+        User.allUsers.append(newUser)
+        User.currentUser = newUser
+        errorMessage = ""
+        onSignUpSuccess?()
     }
 }
 

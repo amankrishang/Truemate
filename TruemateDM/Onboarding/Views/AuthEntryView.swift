@@ -78,14 +78,12 @@ struct AuthEntryView: View {
                         screen = .home
                     },
                     onNotNow: {
-                        // End of onboarding flow for now
                     }
                 )
             case .home:
                 AppStoreStyleTabView()
             }
         }
-        .animation(.easeInOut(duration: 0.2), value: screen)
     }
 }
 

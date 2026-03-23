@@ -1,15 +1,15 @@
 import SwiftUI
 
 struct EditNameView: View {
-    @Environment(\.dismiss) var dismiss
+    @Binding var isPresented: Bool
 
-    @State private var firstName: String = "Varni"
-    @State private var lastName: String = "Singh"
+    @State private var firstName: String = ""
+    @State private var lastName: String = ""
 
     var body: some View {
         VStack(spacing: 0) {
             HStack {
-                Button(action: { dismiss() }) {
+                Button(action: { isPresented = false }) {
                     ZStack {
                         Circle()
                             .fill(Color(.systemGray5))
@@ -92,10 +92,10 @@ struct EditNameView: View {
     }
 
     private func handleSave() {
-        dismiss()
+        isPresented = false
     }
 }
 
 #Preview {
-    EditNameView()
+    EditNameView(isPresented: .constant(true))
 }

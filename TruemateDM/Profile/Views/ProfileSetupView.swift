@@ -1,25 +1,17 @@
 import SwiftUI
-import SwiftData
 
 struct ProfileSetupView: View {
-    @Environment(\.modelContext) private var modelContext
-    @Query private var users: [User]
-    @Query private var seekerProfiles: [FlatSeekerProfile]
-
-    @State private var fullName: String = ""
-    @State private var email: String = ""
-    @State private var phoneNumber: String = ""
-    @State private var age: String = ""
-
-    @State private var address: String = ""
-    @State private var country: String = ""
-    @State private var postalCode: String = ""
-    @State private var city: String = ""
-    @State private var aadhaarVerified: Bool = false
+    @State private var fullName = ""
+    @State private var email = ""
+    @State private var phoneNumber = ""
+    @State private var age = ""
+    @State private var address = ""
+    @State private var country = ""
+    @State private var postalCode = ""
+    @State private var city = ""
+    @State private var aadhaarVerified = false
 
     var onContinue: (() -> Void)? = nil
-
-    private var currentUser: User? { users.first }
 
     var body: some View {
         ScrollView {
@@ -35,12 +27,10 @@ struct ProfileSetupView: View {
                         Circle()
                             .fill(Color(.systemGray4))
                             .frame(width: 100, height: 100)
-
                         Image(systemName: "camera")
                             .font(.system(size: 30))
                             .foregroundColor(Color(.systemGray2))
                     }
-
                     Text("Add Profile Photo")
                         .font(.system(size: 15))
                         .foregroundColor(Color(.systemGray))
@@ -91,9 +81,7 @@ struct ProfileSetupView: View {
                     .padding(.horizontal)
                 }
 
-                Button(action: {
-                    aadhaarVerified.toggle()
-                }) {
+                Button(action: { aadhaarVerified.toggle() }) {
                     HStack(spacing: 8) {
                         Image(systemName: aadhaarVerified ? "checkmark.shield.fill" : "checkmark.shield")
                             .font(.system(size: 16))
@@ -130,7 +118,10 @@ struct ProfileSetupView: View {
                 }
                 .padding(.horizontal)
 
-                Button(action: saveProfile) {
+                Button(action: {
+                    saveToModel()
+                    onContinue?()
+                }) {
                     Text("Continue")
                         .font(.system(size: 18, weight: .medium))
                         .foregroundColor(.blue)
@@ -143,68 +134,36 @@ struct ProfileSetupView: View {
                 .padding(.bottom, 32)
             }
         }
-        .onAppear(perform: loadData)
+        .onAppear(perform: loadFromModel)
         .background(Color(.systemGray6))
         .navigationBarHidden(true)
     }
 
-    private func loadData() {
-        guard let user = currentUser else { return }
-
+    private func loadFromModel() {
+        guard let user = User.currentUser else { return }
         fullName = user.fullName
         email = user.email
         phoneNumber = user.phoneNumber
-        age = "\(user.age)"
-
-        if let profile = seekerProfiles.first(where: { $0.userID == user.id }) {
-            address = profile.address
-            postalCode = profile.postalCode
-            city = profile.city
-            aadhaarVerified = profile.aadhaarVerified
-        }
+        age = String(user.age)
+        address = user.address
+        country = user.country
+        postalCode = user.postalCode
+        city = user.city
+        aadhaarVerified = user.aadhaarVerified
     }
 
-    private func saveProfile() {
-        guard let user = currentUser else { return }
-
-        user.fullName = fullName.trimmingCharacters(in: .whitespacesAndNewlines)
-        user.email = email.trimmingCharacters(in: .whitespacesAndNewlines)
-        user.phoneNumber = phoneNumber.trimmingCharacters(in: .whitespacesAndNewlines)
+    private func saveToModel() {
+        guard let user = User.currentUser else { return }
+        user.fullName = fullName
+        user.email = email
+        user.phoneNumber = phoneNumber
         user.age = Int(age) ?? user.age
+        user.address = address
+        user.country = country
+        user.postalCode = postalCode
+        user.city = city
+        user.aadhaarVerified = aadhaarVerified
         user.isOnboardingComplete = true
-
-        let profile: FlatSeekerProfile
-        if let existing = seekerProfiles.first(where: { $0.userID == user.id }) {
-            profile = existing
-        } else {
-            let created = FlatSeekerProfile(
-                userID: user.id,
-                fullName: user.fullName,
-                email: user.email,
-                phoneNumber: user.phoneNumber,
-                age: user.age
-            )
-            modelContext.insert(created)
-            profile = created
-        }
-
-        profile.fullName = user.fullName
-        profile.email = user.email
-        profile.phoneNumber = user.phoneNumber
-        profile.age = user.age
-        profile.address = address.trimmingCharacters(in: .whitespacesAndNewlines)
-        profile.city = city.trimmingCharacters(in: .whitespacesAndNewlines)
-        profile.postalCode = postalCode.trimmingCharacters(in: .whitespacesAndNewlines)
-        profile.aadhaarVerified = aadhaarVerified
-
-        if !country.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            profile.address = [profile.address, country.trimmingCharacters(in: .whitespacesAndNewlines)]
-                .filter { !$0.isEmpty }
-                .joined(separator: ", ")
-        }
-
-        try? modelContext.save()
-        onContinue?()
     }
 }
 
@@ -218,14 +177,11 @@ struct ClearableTextField: View {
             Text(placeholder)
                 .foregroundColor(Color(.systemGray))
                 .font(.system(size: 15))
-
             Spacer()
-
             TextField("", text: $text)
                 .multilineTextAlignment(.trailing)
                 .font(.system(size: 15))
                 .foregroundColor(.primary)
-
             if showClear && !text.isEmpty {
                 Button(action: { text = "" }) {
                     Image(systemName: "xmark.circle.fill")

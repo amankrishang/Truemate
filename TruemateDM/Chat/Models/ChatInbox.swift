@@ -1,20 +1,25 @@
 import SwiftUI
 import Combine
 
-final class ChatInbox: ObservableObject {
+class ChatInbox: ObservableObject {
+    static let shared = ChatInbox()
     @Published var chats: [ChatPreview] = []
 
     func addAbhishekIfNeeded() {
-        guard chats.contains(where: { $0.name == "Abhishek Gupta" }) == false else { return }
-        chats.insert(
-            ChatPreview(
-                name: "Abhishek Gupta",
-                lastMessage: "Match request sent. Tap to open chat",
-                hasUnread: true,
-                avatarColor: .blue,
-                avatarSystemImage: "person.fill"
-            ),
-            at: 0
+        for chat in chats {
+            if chat.name == "Abhishek Gupta" {
+                return
+            }
+        }
+
+        let abhishekChat = ChatPreview(
+            name: "Abhishek Gupta",
+            lastMessage: "Match request sent. Tap to open chat",
+            hasUnread: true,
+            avatarColor: .blue,
+            avatarSystemImage: "person.fill"
         )
+
+        chats.insert(abhishekChat, at: 0)
     }
 }
