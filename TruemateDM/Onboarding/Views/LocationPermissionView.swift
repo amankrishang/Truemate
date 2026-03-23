@@ -6,7 +6,7 @@ struct LocationPermissionView: View {
     var onEnable: (() -> Void)? = nil
     var onNotNow: (() -> Void)? = nil
 
-    @StateObject private var locationManager = LocationPermissionManager()
+    @State private var locationManager = LocationPermissionManager()
 
     var body: some View {
         VStack(spacing: 0) {

@@ -94,13 +94,42 @@ struct ChatsListView: View {
                             }
                         }
                     }
-                    .background(.ultraThinMaterial)
-                    .clipShape(RoundedRectangle(cornerRadius: 26))
+                    .background(
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 26)
+                                .fill(.ultraThinMaterial)
+                            RoundedRectangle(cornerRadius: 26)
+                                .fill(
+                                    LinearGradient(
+                                        colors: [
+                                            Color.white.opacity(0.30),
+                                            Color.white.opacity(0.10)
+                                        ],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    )
+                                )
+                        }
+                    )
+                    .clipShape(RoundedRectangle(cornerRadius: 26, style: .continuous))
                     .overlay(
-                        RoundedRectangle(cornerRadius: 26)
+                        RoundedRectangle(cornerRadius: 26, style: .continuous)
                             .stroke(Color.white.opacity(0.45), lineWidth: 1)
                     )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 26, style: .continuous)
+                            .stroke(
+                                LinearGradient(
+                                    colors: [Color.white.opacity(0.75), Color.white.opacity(0.12)],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                ),
+                                lineWidth: 1
+                            )
+                            .blur(radius: 0.2)
+                    )
                     .shadow(color: Color.black.opacity(0.12), radius: 14, x: 0, y: 8)
+                    .shadow(color: Color.white.opacity(0.25), radius: 6, x: 0, y: -2)
                     .frame(width: 290)
                     .padding(.top, 72)
                     .padding(.trailing, 18)

@@ -35,15 +35,33 @@ struct SendMessageRequestView: View {
                 Spacer()
 
                 Button(action: {}) {
-                    Image(systemName: "phone.fill")
-                        .font(.system(size: 18))
-                        .foregroundColor(.primary)
+                    ZStack {
+                        Circle()
+                            .fill(.ultraThinMaterial)
+                            .frame(width: 38, height: 38)
+                            .overlay(
+                                Circle()
+                                    .stroke(Color.white.opacity(0.7), lineWidth: 1)
+                            )
+                        Image(systemName: "phone.fill")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundColor(.primary)
+                    }
                 }
 
                 Button(action: {}) {
-                    Image(systemName: "video.fill")
-                        .font(.system(size: 18))
-                        .foregroundColor(.primary)
+                    ZStack {
+                        Circle()
+                            .fill(.ultraThinMaterial)
+                            .frame(width: 38, height: 38)
+                            .overlay(
+                                Circle()
+                                    .stroke(Color.white.opacity(0.7), lineWidth: 1)
+                            )
+                        Image(systemName: "video.fill")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundColor(.primary)
+                    }
                 }
             }
             .padding(.horizontal, 16)
