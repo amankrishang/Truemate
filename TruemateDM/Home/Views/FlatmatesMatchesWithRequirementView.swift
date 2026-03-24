@@ -136,7 +136,8 @@ struct FlatmatesMatchesWithRequirementView: View {
                     isPresented: Binding(
                         get: { activeSheet == .create },
                         set: { if !$0 { activeSheet = nil } }
-                    )
+                    ),
+                    onPostCreated: { activeSheet = nil }
                 )
             case .edit:
                 EditPostView(
@@ -157,7 +158,7 @@ struct FlatmatesMatchesWithRequirementView: View {
                     FlatmateProfileView(
                         onBack: nil,
                         profile: FlatmateProfile.from(name: selectedProfileName),
-                        useBackButton: false
+                        useBackButton: true
                     )
                 }
             }

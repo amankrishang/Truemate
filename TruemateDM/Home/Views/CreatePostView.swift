@@ -2,7 +2,7 @@ import SwiftUI
 
 struct CreatePostView: View {
     @Binding var isPresented: Bool
-    var onPostCreated: (() -> Void)? = nil
+    var onPostCreated: () -> Void
 
     @State private var propertyType = "Apartment"
     @State private var roomType = "Single"
@@ -99,7 +99,7 @@ struct CreatePostView: View {
     }
 
     private func handleSubmit() {
-        onPostCreated?()
+        onPostCreated()
         isPresented = false
     }
 }
@@ -279,5 +279,5 @@ struct ClearableInputRow: View {
 }
 
 #Preview {
-    CreatePostView(isPresented: .constant(true))
+    CreatePostView(isPresented: .constant(true), onPostCreated: {})
 }

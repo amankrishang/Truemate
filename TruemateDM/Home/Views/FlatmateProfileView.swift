@@ -10,6 +10,12 @@ struct FlatmateProfileView: View {
     let profile: FlatmateProfile
     let useBackButton: Bool
 
+    init(onBack: (() -> Void)?, profile: FlatmateProfile, useBackButton: Bool) {
+        self.onBack = onBack
+        self.profile = profile
+        self.useBackButton = useBackButton
+    }
+
     var body: some View {
         ScrollView {
             VStack(spacing: 0) {
@@ -20,7 +26,7 @@ struct FlatmateProfileView: View {
                                 .fill(Color.white)
                                 .frame(width: 38, height: 38)
                                 .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
-                            Image(systemName: useBackButton ? "chevron.left" : "xmark")
+                            Image(systemName: "chevron.left")
                                 .font(.system(size: 14, weight: .medium))
                                 .foregroundColor(.primary)
                         }
@@ -164,7 +170,7 @@ struct FlatmateProfileView: View {
         .background(Color(.systemGray6))
         .navigationBarHidden(true)
         .navigationDestination(isPresented: $showSuitabilityDetailsPage) {
-            SuitabilityDetailsView(useBackButton: true)
+            SuitabilityDetailsView(matchName: profile.name, useBackButton: true)
         }
         .onAppear {
             isSaved = profile.isSaved
@@ -197,12 +203,4 @@ struct BasicInfoRow: View {
         .padding(.horizontal, 16)
         .padding(.vertical, 15)
     }
-}
-
-#Preview {
-    FlatmateProfileView(
-        onBack: nil,
-        profile: .abhishek,
-        useBackButton: false
-    )
 }

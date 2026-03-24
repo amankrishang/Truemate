@@ -52,22 +52,26 @@ struct AuthEntryView: View {
             case .lifestyleQuiz:
                 HomeLifestyleQuizView(
                     onNext: {
-                        if User.currentUser?.activeMode == .findFlatmates {
-                            screen = .homeCreatePost
-                        } else {
-                            screen = .profileSetup
-                        }
+                        screen = .profileSetup
                     },
                     onBack: {
                         screen = .lookingFor
                     }
                 )
             case .profileSetup:
-                ProfileSetupView(
-                    onContinue: {
-                        screen = .notifications
-                    }
-                )
+                if User.currentUser?.activeMode == .findFlatmates {
+                    CoLivingProfileSetupView(
+                        onContinue: {
+                            screen = .notifications
+                        }
+                    )
+                } else {
+                    ProfileSetupView(
+                        onContinue: {
+                            screen = .notifications
+                        }
+                    )
+                }
             case .notifications:
                 NotificationsPermissionView(
                     onAllow: {
@@ -86,7 +90,7 @@ struct AuthEntryView: View {
                     }
                 )
             case .home:
-                BaseMatchView()
+                BaseMatchView(openFlatmatesCreateOnAppear: false)
             case .homeCreatePost:
                 BaseMatchView(openFlatmatesCreateOnAppear: true)
             }

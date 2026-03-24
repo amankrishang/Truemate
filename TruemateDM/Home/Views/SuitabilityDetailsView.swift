@@ -2,13 +2,22 @@ import SwiftUI
 
 struct SuitabilityDetailsView: View {
     @Environment(\.dismiss) private var dismiss
+    let matchName: String
     var onBack: (() -> Void)? = nil
-    var useBackButton: Bool = false
+    var useBackButton: Bool = true
 
-    let matchName: String = "Abhishek"
+    let potentialMatches: [String]
+    let potentialMismatches: [String]
 
-    let potentialMatches = SuitabilityDetailsData.potentialMatches
-    let potentialMismatches = SuitabilityDetailsData.potentialMismatches
+    init(matchName: String = "Abhishek", onBack: (() -> Void)? = nil, useBackButton: Bool = true) {
+        self.matchName = matchName
+        self.onBack = onBack
+        self.useBackButton = useBackButton
+
+        let data = SuitabilityDetailsData.randomSet(for: matchName)
+        self.potentialMatches = data.matches
+        self.potentialMismatches = data.mismatches
+    }
 
     var body: some View {
         ZStack(alignment: .top) {
@@ -24,7 +33,7 @@ struct SuitabilityDetailsView: View {
                                     Circle()
                                         .fill(Color(.systemGray5))
                                         .frame(width: 36, height: 36)
-                                    Image(systemName: useBackButton ? "chevron.left" : "xmark")
+                                    Image(systemName: "chevron.left")
                                         .font(.system(size: 13, weight: .medium))
                                         .foregroundColor(.primary)
                                 }

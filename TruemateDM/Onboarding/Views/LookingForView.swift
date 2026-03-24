@@ -23,9 +23,9 @@ struct LookingForView: View {
                 .padding(.horizontal, 24)
                 .padding(.bottom, 80)
 
-            HStack(spacing: 20) {
+            HStack(spacing: 12) {
                 OptionButton(
-                    title: "Co-living Space",
+                    title: "Flatmates",
                     isSelected: selected == .findFlats
                 ) {
                     selectMode(.findFlats)
@@ -33,14 +33,12 @@ struct LookingForView: View {
                 }
 
                 OptionButton(
-                    title: "Flatmates",
+                    title: "Co-living Spaces",
                     isSelected: selected == .findFlatmates
                 ) {
                     selectMode(.findFlatmates)
                     onNext?()
                 }
-
-                Spacer()
             }
             .padding(.horizontal, 24)
 
@@ -69,10 +67,13 @@ struct OptionButton: View {
     var body: some View {
         Button(action: action) {
             Text(title)
-                .font(.system(size: 16, weight: .semibold))
+                .font(.system(size: 15, weight: .semibold))
+                .lineLimit(1)
+                .minimumScaleFactor(0.82)
                 .foregroundColor(.white)
-                .padding(.horizontal, 26)
-                .padding(.vertical, 18)
+                .padding(.horizontal, 20)
+                .padding(.vertical, 16)
+                .frame(maxWidth: .infinity)
                 .background(
                     isSelected
                     ? Color(red: 0.10, green: 0.20, blue: 0.85)

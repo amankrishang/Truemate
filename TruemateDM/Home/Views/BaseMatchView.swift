@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct BaseMatchView: View {
-    var openFlatmatesCreateOnAppear = false
+    let openFlatmatesCreateOnAppear: Bool
     @State private var hasCreatedPost = false
     @State private var hasCreatedFlatRequirement = false
     @State private var selectedTab = 0
@@ -217,12 +217,14 @@ struct MatchesHomeView: View {
         }
         .background(Color(.systemGray6))
         .navigationBarHidden(true)
-        .navigationDestination(isPresented: $showFlatmateProfile) {
-            FlatmateProfileView(
-                onBack: nil,
-                profile: FlatmateProfile.from(name: selectedProfileName),
-                useBackButton: false
-            )
+        .sheet(isPresented: $showFlatmateProfile) {
+            NavigationStack {
+                FlatmateProfileView(
+                    onBack: nil,
+                    profile: FlatmateProfile.from(name: selectedProfileName),
+                    useBackButton: true
+                )
+            }
         }
         .fullScreenCover(isPresented: $showCreatePost) {
             CreatePostView(isPresented: $showCreatePost, onPostCreated: {
@@ -234,9 +236,7 @@ struct MatchesHomeView: View {
 
 struct MatchesWithPostView: View {
     var onCreatePostSuccess: () -> Void
-    @State private var showCreatePost = false
-    @State private var showAllFlatmates = false
-    @State private var showEditPost = false
+    @State private var activeSheet: MatchesWithPostSheet?
     @State private var selectedProfileName = ""
     @State private var showFlatmateProfile = false
 
@@ -293,7 +293,7 @@ struct MatchesWithPostView: View {
                         .font(.system(size: 17, weight: .semibold))
                         .foregroundColor(.primary)
                     Spacer()
-                    Button(action: { showEditPost = true }) {
+                    Button(action: { activeSheet = .editPost }) {
                         ZStack {
                             Circle()
                                 .fill(Color(.systemGray5))
@@ -303,7 +303,7 @@ struct MatchesWithPostView: View {
                                 .foregroundColor(.primary)
                         }
                     }
-                    Button(action: { showCreatePost = true }) {
+                    Button(action: { activeSheet = .createPost }) {
                         ZStack {
                             Circle()
                                 .fill(Color(.systemGray5))
@@ -390,7 +390,7 @@ struct MatchesWithPostView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 14))
                 .padding(.horizontal)
 
-                Button(action: { showAllFlatmates = true }) {
+                Button(action: { activeSheet = .allFlatmates }) {
                     HStack {
                         Text("All flatmates")
                             .font(.system(size: 17, weight: .semibold))
@@ -420,25 +420,53 @@ struct MatchesWithPostView: View {
         }
         .background(Color(.systemGray6))
         .navigationBarHidden(true)
-        .navigationDestination(isPresented: $showFlatmateProfile) {
-            FlatmateProfileView(
-                onBack: nil,
-                profile: FlatmateProfile.from(name: selectedProfileName),
-                useBackButton: false
-            )
+        .sheet(isPresented: $showFlatmateProfile) {
+            NavigationStack {
+                FlatmateProfileView(
+                    onBack: nil,
+                    profile: FlatmateProfile.from(name: selectedProfileName),
+                    useBackButton: true
+                )
+            }
         }
-        .sheet(isPresented: $showCreatePost) {
-            CreatePostView(isPresented: $showCreatePost, onPostCreated: {
-                onCreatePostSuccess()
-            })
-        }
-        .sheet(isPresented: $showAllFlatmates) {
-            AllFlatmatesView(isPresented: $showAllFlatmates)
-        }
-        .sheet(isPresented: $showEditPost) {
-            EditPostView(isPresented: $showEditPost)
+        .sheet(item: $activeSheet) { sheet in
+            switch sheet {
+            case .createPost:
+                CreatePostView(
+                    isPresented: Binding(
+                        get: { activeSheet == .createPost },
+                        set: { if !$0 { activeSheet = nil } }
+                    ),
+                    onPostCreated: {
+                        onCreatePostSuccess()
+                        activeSheet = nil
+                    }
+                )
+            case .allFlatmates:
+                AllFlatmatesView(
+                    isPresented: Binding(
+                        get: { activeSheet == .allFlatmates },
+                        set: { if !$0 { activeSheet = nil } }
+                    )
+                )
+            case .editPost:
+                EditPostView(
+                    isPresented: Binding(
+                        get: { activeSheet == .editPost },
+                        set: { if !$0 { activeSheet = nil } }
+                    )
+                )
+            }
         }
     }
+}
+
+enum MatchesWithPostSheet: String, Identifiable {
+    case createPost
+    case allFlatmates
+    case editPost
+
+    var id: String { rawValue }
 }
 
 struct ListingRowView: View {
@@ -565,5 +593,5 @@ struct RoundedCorner: Shape {
 }
 
 #Preview {
-    BaseMatchView()
+    BaseMatchView(openFlatmatesCreateOnAppear: false)
 }

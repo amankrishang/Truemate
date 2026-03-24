@@ -2,7 +2,7 @@ import SwiftUI
 
 struct FlatmatesMatchesView: View {
     var onRequirementCreated: () -> Void
-    var openCreateOnAppear = false
+    let openCreateOnAppear: Bool
     @State private var showCreatePost = false
     @State private var didAutoOpen = false
 

@@ -1,51 +1,48 @@
 import SwiftUI
 
-struct ProfileSetupView: View {
+struct CoLivingProfileSetupView: View {
     @State private var fullName: String = ""
     @State private var email: String = ""
     @State private var phone: String = ""
     @State private var age: String = ""
 
-    @State private var address: String = ""
-    @State private var country: String = ""
-    @State private var postalCode: String = ""
-    @State private var city: String = ""
-
     var onContinue: (() -> Void)? = nil
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 18) {
+            VStack(alignment: .leading, spacing: 20) {
                 Text("Profile Setup")
-                    .font(.system(size: 28, weight: .bold))
+                    .font(.system(size: 30, weight: .bold))
                     .foregroundColor(Color.blue)
 
                 ZStack {
-                    RoundedRectangle(cornerRadius: 20)
+                    RoundedRectangle(cornerRadius: 22)
                         .fill(Color(.systemGray6))
-                        .frame(height: 150)
+                        .frame(height: 160)
 
-                    VStack(spacing: 10) {
+                    VStack(spacing: 12) {
                         ZStack {
                             Circle()
                                 .fill(Color(.systemGray5))
-                                .frame(width: 80, height: 80)
+                                .frame(width: 90, height: 90)
 
                             Image(systemName: "camera")
+                                .font(.system(size: 22))
                                 .foregroundColor(.gray)
                         }
 
                         Text("Add Profile Photo")
+                            .font(.system(size: 15))
                             .foregroundColor(.gray)
-                            .font(.system(size: 14))
                     }
                 }
 
                 Text("Personal Information")
-                    .font(.system(size: 16, weight: .medium))
+                    .font(.system(size: 17, weight: .medium))
+                    .foregroundColor(.black)
 
                 VStack(spacing: 0) {
-                    inputField("Full Name", text: $fullName, clear: true)
+                    inputField("Full Name", text: $fullName, showClear: true)
                     divider()
                     inputField("Email", text: $email)
                     divider()
@@ -54,26 +51,20 @@ struct ProfileSetupView: View {
                     inputField("Age", text: $age)
                 }
                 .background(Color(.systemGray6))
-                .cornerRadius(15)
+                .cornerRadius(18)
 
-                Text("Property location")
-                    .font(.system(size: 16, weight: .medium))
+                HStack(spacing: 8) {
+                    Image(systemName: "checkmark.shield")
+                        .foregroundColor(.blue)
 
-                VStack(spacing: 0) {
-                    inputField("Enter your address", text: $address, clear: true)
-                    divider()
-                    inputField("Enter your country", text: $country)
-                    divider()
-                    inputField("Enter your postal code", text: $postalCode)
-                    divider()
-                    inputField("Enter your city", text: $city)
+                    Text("Verify Aadhaar via DigiLocker")
+                        .font(.system(size: 15))
+                        .foregroundColor(.blue)
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding()
                 .background(Color(.systemGray6))
-                .cornerRadius(15)
-
-                Text("Verification helps build trust and improves your match quality.")
-                    .font(.system(size: 12))
-                    .foregroundColor(.gray)
+                .cornerRadius(25)
 
                 Button(action: {
                     saveToModel()
@@ -85,7 +76,7 @@ struct ProfileSetupView: View {
                         .frame(maxWidth: .infinity)
                         .padding()
                         .background(Color(.systemGray6))
-                        .cornerRadius(25)
+                        .cornerRadius(30)
                 }
             }
             .padding(.horizontal, 20)
@@ -96,12 +87,12 @@ struct ProfileSetupView: View {
         .navigationBarHidden(true)
     }
 
-    func inputField(_ placeholder: String, text: Binding<String>, clear: Bool = false) -> some View {
+    func inputField(_ placeholder: String, text: Binding<String>, showClear: Bool = false) -> some View {
         HStack {
             TextField(placeholder, text: text)
-                .font(.system(size: 14))
+                .font(.system(size: 15))
 
-            if clear && !text.wrappedValue.isEmpty {
+            if showClear && !text.wrappedValue.isEmpty {
                 Button {
                     text.wrappedValue = ""
                 } label: {
@@ -120,34 +111,15 @@ struct ProfileSetupView: View {
             .padding(.leading)
     }
 
-    func actionCard(icon: String, text: String) -> some View {
-        HStack(spacing: 8) {
-            Image(systemName: icon)
-                .foregroundColor(.blue)
-
-            Text(text)
-                .font(.system(size: 14))
-                .foregroundColor(.blue)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding()
-        .background(Color(.systemGray6))
-        .cornerRadius(15)
-    }
-
     func saveToModel() {
         guard let user = User.currentUser else { return }
         user.fullName = fullName
         user.email = email
         user.phoneNumber = phone
         user.age = Int(age) ?? 0
-        user.address = address
-        user.country = country
-        user.postalCode = postalCode
-        user.city = city
     }
 }
 
 #Preview {
-    ProfileSetupView()
+    CoLivingProfileSetupView()
 }

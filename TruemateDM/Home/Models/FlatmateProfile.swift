@@ -20,19 +20,48 @@ struct MatchTag: Identifiable {
 }
 
 struct SuitabilityDetailsData {
-    static let potentialMatches = [
+    static let allTopics = [
         "Night Routine",
         "Budget",
-        "Pets"
-    ]
-
-    static let potentialMismatches = [
         "Guests",
+        "Pets",
         "Cleaning",
         "Late Night Calls",
         "Household Responsibilities",
-        "Communication"
+        "Communication",
+        "Music Volume",
+        "Work From Home",
+        "Food Preferences",
+        "Sleep Schedule",
+        "Visitors Frequency",
+        "Utility Sharing",
+        "Weekend Plans",
+        "Personal Space"
     ]
+
+    static func randomSet(for name: String) -> (matches: [String], mismatches: [String]) {
+        let _ = name
+        var topics = allTopics.shuffled()
+
+        var matchCount = Int.random(in: 2...7)
+        var mismatchCount = Int.random(in: 2...7)
+
+        if matchCount + mismatchCount > topics.count {
+            let maxMismatch = max(2, topics.count - matchCount)
+            mismatchCount = min(mismatchCount, maxMismatch)
+        }
+
+        if matchCount + mismatchCount > topics.count {
+            let maxMatch = max(2, topics.count - mismatchCount)
+            matchCount = min(matchCount, maxMatch)
+        }
+
+        let matches = Array(topics.prefix(matchCount))
+        topics.removeFirst(matchCount)
+        let mismatches = Array(topics.prefix(mismatchCount))
+
+        return (matches, mismatches)
+    }
 }
 
 extension FlatmateProfile {
