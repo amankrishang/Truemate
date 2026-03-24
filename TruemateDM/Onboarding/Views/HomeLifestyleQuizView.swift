@@ -5,6 +5,7 @@ struct HomeLifestyleQuizView: View {
     @State private var selections: [String: String] = [:]
 
     var onNext: (() -> Void)? = nil
+    var onBack: (() -> Void)? = nil
 
     private var mode: UserMode { User.currentUser?.activeMode ?? .findFlats }
     private var questions: [QuizQuestion] { QuizData.questions(for: mode) }
@@ -16,6 +17,7 @@ struct HomeLifestyleQuizView: View {
     }
     private var selectedAnswerForCurrent: String? { selections[currentQuestion.id] }
     private var isLastQuestion: Bool { currentIndex == totalQuestions - 1 }
+    private var isFirstQuestion: Bool { currentIndex == 0 }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -76,7 +78,7 @@ struct HomeLifestyleQuizView: View {
 
             HStack {
                 Button(action: handlePrevious) {
-                    Text("Previous")
+                    Text(isFirstQuestion ? "Back" : "Previous")
                         .font(.system(size: 17, weight: .semibold))
                         .foregroundColor(Color(red: 0.22, green: 0.42, blue: 0.98))
                         .padding(.horizontal, 28)
@@ -87,8 +89,6 @@ struct HomeLifestyleQuizView: View {
                                 .stroke(Color(red: 0.22, green: 0.42, blue: 0.98), lineWidth: 1)
                         )
                 }
-                .disabled(currentIndex == 0)
-                .opacity(currentIndex == 0 ? 0.4 : 1)
 
                 Spacer()
 
@@ -129,9 +129,12 @@ struct HomeLifestyleQuizView: View {
     }
 
     private func handlePrevious() {
-        if currentIndex > 0 {
-            currentIndex -= 1
+        if isFirstQuestion {
+            onBack?()
+            return
         }
+
+        currentIndex -= 1
     }
 
     private func saveAnswers() {

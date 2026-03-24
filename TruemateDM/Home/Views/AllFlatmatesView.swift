@@ -3,7 +3,7 @@ import SwiftUI
 struct AllFlatmatesView: View {
     @Binding var isPresented: Bool
     @State private var selectedTab: FlatmateTab = .recommended
-    @State private var selectedProfileName = "Abhishek Gupta"
+    @State private var selectedProfileName = ""
     @State private var showProfilePage = false
     @State private var showFilterOptions = false
     @State private var selectedSort: FlatmateSortOption = .highestBudget

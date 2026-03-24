@@ -2,7 +2,7 @@ import SwiftUI
 
 struct FlatmatesMatchesWithRequirementView: View {
     @State private var activeSheet: FlatmatesSheet?
-    @State private var selectedProfileName = "Abhishek Gupta"
+    @State private var selectedProfileName = ""
 
     let requirements = FlatRequirement.sample
     let listings = FlatListing.sample

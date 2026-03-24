@@ -57,6 +57,9 @@ struct AuthEntryView: View {
                         } else {
                             screen = .profileSetup
                         }
+                    },
+                    onBack: {
+                        screen = .lookingFor
                     }
                 )
             case .profileSetup:

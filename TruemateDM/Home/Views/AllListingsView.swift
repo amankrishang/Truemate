@@ -5,7 +5,7 @@ struct AllListingsView: View {
     @State private var selectedTab: ListingTab = .recommended
     @State private var listings = FlatListing.sample
     @State private var showListingProfile = false
-    @State private var selectedProfileName = "Abhishek Gupta"
+    @State private var selectedProfileName = ""
 
     enum ListingTab {
         case recommended

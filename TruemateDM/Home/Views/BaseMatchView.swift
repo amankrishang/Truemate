@@ -66,7 +66,7 @@ struct BaseMatchView: View {
 struct MatchesHomeView: View {
     var onCreatePostSuccess: () -> Void
     @State private var showCreatePost = false
-    @State private var selectedProfileName = "Abhishek Gupta"
+    @State private var selectedProfileName = ""
     @State private var showFlatmateProfile = false
 
     let listings = ListingMatch.sample
@@ -237,7 +237,7 @@ struct MatchesWithPostView: View {
     @State private var showCreatePost = false
     @State private var showAllFlatmates = false
     @State private var showEditPost = false
-    @State private var selectedProfileName = "Abhishek Gupta"
+    @State private var selectedProfileName = ""
     @State private var showFlatmateProfile = false
 
     let flatmates = FlatmateMatch.sample
