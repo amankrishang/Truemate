@@ -2,13 +2,13 @@ import SwiftUI
 
 struct FlatmateProfileView: View {
     @Environment(\.dismiss) private var dismiss
-    var onBack: (() -> Void)? = nil
+    let onBack: (() -> Void)?
 
     @State private var showSuitabilityDetailsPage = false
     @State private var isSaved = false
 
-    var profile: FlatmateProfile = .abhishek
-    var useBackButton: Bool = false
+    let profile: FlatmateProfile
+    let useBackButton: Bool
 
     var body: some View {
         ScrollView {
@@ -160,16 +160,12 @@ struct FlatmateProfileView: View {
                 .padding(.bottom, 32)
             }
 
-            NavigationLink(
-                destination: SuitabilityDetailsView(useBackButton: useBackButton),
-                isActive: $showSuitabilityDetailsPage
-            ) {
-                EmptyView()
-            }
-            .hidden()
         }
         .background(Color(.systemGray6))
         .navigationBarHidden(true)
+        .navigationDestination(isPresented: $showSuitabilityDetailsPage) {
+            SuitabilityDetailsView(useBackButton: true)
+        }
         .onAppear {
             isSaved = profile.isSaved
         }
@@ -204,5 +200,9 @@ struct BasicInfoRow: View {
 }
 
 #Preview {
-    FlatmateProfileView()
+    FlatmateProfileView(
+        onBack: nil,
+        profile: .abhishek,
+        useBackButton: false
+    )
 }

@@ -37,6 +37,7 @@ struct LookingForView: View {
                     isSelected: selected == .findFlatmates
                 ) {
                     selectMode(.findFlatmates)
+                    onNext?()
                 }
 
                 Spacer()

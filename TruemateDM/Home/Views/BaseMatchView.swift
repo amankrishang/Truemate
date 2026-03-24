@@ -1,17 +1,32 @@
 import SwiftUI
 
 struct BaseMatchView: View {
+    var openFlatmatesCreateOnAppear = false
     @State private var hasCreatedPost = false
+    @State private var hasCreatedFlatRequirement = false
     @State private var selectedTab = 0
 
     var body: some View {
         TabView(selection: $selectedTab) {
             NavigationStack {
                 Group {
-                    if hasCreatedPost {
-                        MatchesWithPostView(onCreatePostSuccess: { hasCreatedPost = true })
+                    if User.currentUser?.activeMode == .findFlatmates {
+                        if hasCreatedFlatRequirement {
+                            FlatmatesMatchesWithRequirementView()
+                        } else {
+                            FlatmatesMatchesView(
+                                onRequirementCreated: {
+                                    hasCreatedFlatRequirement = true
+                                },
+                                openCreateOnAppear: openFlatmatesCreateOnAppear
+                            )
+                        }
                     } else {
-                        MatchesHomeView(onCreatePostSuccess: { hasCreatedPost = true })
+                        if hasCreatedPost {
+                            MatchesWithPostView(onCreatePostSuccess: { hasCreatedPost = true })
+                        } else {
+                            MatchesHomeView(onCreatePostSuccess: { hasCreatedPost = true })
+                        }
                     }
                 }
             }
@@ -55,6 +70,22 @@ struct MatchesHomeView: View {
     @State private var showFlatmateProfile = false
 
     let listings = ListingMatch.sample
+    
+    private var isFlatmatesMode: Bool {
+        User.currentUser?.activeMode == .findFlatmates
+    }
+
+    private var emptyCardTitle: String {
+        isFlatmatesMode ? "You haven't posted\nyour flat requirement\nyet !" : "You haven't\nlisted your co-living\nspace yet !"
+    }
+
+    private var emptyCardSubtitle: String {
+        isFlatmatesMode ? "Share your preference once, and\nwe'll match you with\nrelevant spaces" : "Add your details once, and\nwe'll match you with your\ncompatible flatmates"
+    }
+
+    private var createButtonTitle: String {
+        isFlatmatesMode ? "Create requirement" : "Create post"
+    }
 
     var body: some View {
         ScrollView {
@@ -99,12 +130,12 @@ struct MatchesHomeView: View {
                 VStack(alignment: .leading, spacing: 16) {
                     HStack(alignment: .top, spacing: 12) {
                         VStack(alignment: .leading, spacing: 6) {
-                            Text("You haven't\nlisted your co-living\nspace yet !")
+                            Text(emptyCardTitle)
                                 .font(.system(size: 17, weight: .bold))
                                 .foregroundColor(.primary)
                                 .lineSpacing(2)
 
-                            Text("Add your details once, and\nwe'll match you with your\ncompatible flatmates")
+                            Text(emptyCardSubtitle)
                                 .font(.system(size: 12))
                                 .foregroundColor(Color(.systemGray))
                                 .lineSpacing(3)
@@ -128,7 +159,7 @@ struct MatchesHomeView: View {
                         HStack(spacing: 8) {
                             Image(systemName: "plus")
                                 .font(.system(size: 16, weight: .semibold))
-                            Text("Create post")
+                            Text(createButtonTitle)
                                 .font(.system(size: 17, weight: .semibold))
                         }
                         .foregroundColor(.white)
@@ -183,18 +214,16 @@ struct MatchesHomeView: View {
                 .padding(.horizontal)
                 .padding(.bottom, 16)
             }
-            NavigationLink(
-                destination: FlatmateProfileView(
-                    profile: FlatmateProfile.from(name: selectedProfileName)
-                ),
-                isActive: $showFlatmateProfile
-            ) {
-                EmptyView()
-            }
-            .hidden()
         }
         .background(Color(.systemGray6))
         .navigationBarHidden(true)
+        .navigationDestination(isPresented: $showFlatmateProfile) {
+            FlatmateProfileView(
+                onBack: nil,
+                profile: FlatmateProfile.from(name: selectedProfileName),
+                useBackButton: false
+            )
+        }
         .fullScreenCover(isPresented: $showCreatePost) {
             CreatePostView(isPresented: $showCreatePost, onPostCreated: {
                 onCreatePostSuccess()
@@ -212,6 +241,14 @@ struct MatchesWithPostView: View {
     @State private var showFlatmateProfile = false
 
     let flatmates = FlatmateMatch.sample
+    
+    private var isFlatmatesMode: Bool {
+        User.currentUser?.activeMode == .findFlatmates
+    }
+
+    private var myPostTitle: String {
+        isFlatmatesMode ? "My requirement" : "My post"
+    }
 
     var body: some View {
         ScrollView {
@@ -252,7 +289,7 @@ struct MatchesWithPostView: View {
                 .padding(.horizontal)
 
                 HStack {
-                    Text("My post")
+                    Text(myPostTitle)
                         .font(.system(size: 17, weight: .semibold))
                         .foregroundColor(.primary)
                     Spacer()
@@ -380,18 +417,16 @@ struct MatchesWithPostView: View {
                 .padding(.horizontal)
                 .padding(.bottom, 24)
             }
-            NavigationLink(
-                destination: FlatmateProfileView(
-                    profile: FlatmateProfile.from(name: selectedProfileName)
-                ),
-                isActive: $showFlatmateProfile
-            ) {
-                EmptyView()
-            }
-            .hidden()
         }
         .background(Color(.systemGray6))
         .navigationBarHidden(true)
+        .navigationDestination(isPresented: $showFlatmateProfile) {
+            FlatmateProfileView(
+                onBack: nil,
+                profile: FlatmateProfile.from(name: selectedProfileName),
+                useBackButton: false
+            )
+        }
         .sheet(isPresented: $showCreatePost) {
             CreatePostView(isPresented: $showCreatePost, onPostCreated: {
                 onCreatePostSuccess()

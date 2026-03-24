@@ -3,7 +3,7 @@ import SwiftUI
 struct AllFlatmatesView: View {
     @Binding var isPresented: Bool
     @State private var selectedTab: FlatmateTab = .recommended
-    @State private var selectedProfile: FlatmateProfile? = nil
+    @State private var selectedProfileName = "Abhishek Gupta"
     @State private var showProfilePage = false
     @State private var showFilterOptions = false
     @State private var selectedSort: FlatmateSortOption = .highestBudget
@@ -81,7 +81,7 @@ struct AllFlatmatesView: View {
                                 FlatmateDetailCard(
                                 flatmate: flatmate,
                                 onTapCard: {
-                                    selectedProfile = FlatmateProfile.from(name: flatmate.name)
+                                    selectedProfileName = flatmate.name
                                     showProfilePage = true
                                 },
                                 onToggleSave: {
@@ -99,19 +99,6 @@ struct AllFlatmatesView: View {
                 }
                 .background(Color(.systemGray6))
                 
-                if let profile = selectedProfile {
-                    NavigationLink(
-                        destination: FlatmateProfileView(
-                            profile: profile,
-                            useBackButton: true
-                        ),
-                        isActive: $showProfilePage
-                    ) {
-                        EmptyView()
-                    }
-                    .hidden()
-                }
-
                 if showFilterOptions {
                     Color.black.opacity(0.001)
                         .ignoresSafeArea()
@@ -137,6 +124,13 @@ struct AllFlatmatesView: View {
                     .padding(.top, 72)
                     .padding(.trailing, 18)
                 }
+            }
+            .navigationDestination(isPresented: $showProfilePage) {
+                FlatmateProfileView(
+                    onBack: nil,
+                    profile: FlatmateProfile.from(name: selectedProfileName),
+                    useBackButton: true
+                )
             }
         }
         .navigationBarHidden(true)

@@ -10,6 +10,7 @@ enum AuthScreen {
     case notifications
     case location
     case home
+    case homeCreatePost
 }
 
 struct AuthEntryView: View {
@@ -51,7 +52,11 @@ struct AuthEntryView: View {
             case .lifestyleQuiz:
                 HomeLifestyleQuizView(
                     onNext: {
-                        screen = .profileSetup
+                        if User.currentUser?.activeMode == .findFlatmates {
+                            screen = .homeCreatePost
+                        } else {
+                            screen = .profileSetup
+                        }
                     }
                 )
             case .profileSetup:
@@ -79,6 +84,8 @@ struct AuthEntryView: View {
                 )
             case .home:
                 BaseMatchView()
+            case .homeCreatePost:
+                BaseMatchView(openFlatmatesCreateOnAppear: true)
             }
         }
     }

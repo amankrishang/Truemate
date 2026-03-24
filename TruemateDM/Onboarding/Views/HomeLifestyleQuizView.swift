@@ -6,7 +6,8 @@ struct HomeLifestyleQuizView: View {
 
     var onNext: (() -> Void)? = nil
 
-    private var questions: [QuizQuestion] { QuizData.questions }
+    private var mode: UserMode { User.currentUser?.activeMode ?? .findFlats }
+    private var questions: [QuizQuestion] { QuizData.questions(for: mode) }
     private var totalQuestions: Int { questions.count }
     private var currentQuestion: QuizQuestion { questions[currentIndex] }
     private var progress: Double {
@@ -108,6 +109,11 @@ struct HomeLifestyleQuizView: View {
         }
         .background(Color.white)
         .ignoresSafeArea(edges: .bottom)
+        .onAppear {
+            if currentIndex >= totalQuestions {
+                currentIndex = 0
+            }
+        }
     }
 
     private func handleNext() {

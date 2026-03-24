@@ -3,192 +3,201 @@ import SwiftUI
 struct EditPostView: View {
     @Binding var isPresented: Bool
 
-    @State private var propertyType: String = "Apartment"
-    @State private var roomType: String = "Single"
-    @State private var propertyName: String = "2BHK fully furnished"
+    @State private var propertyType = "Apartment"
+    @State private var roomType = "Single"
+    @State private var furnishing = "Semi"
 
-    @State private var description: String = "Hi there this my beautiful fla"
+    @State private var state = ""
+    @State private var city = ""
 
-    @State private var state: String = ""
-    @State private var city: String = ""
+    @State private var gender = "Male"
 
-    @State private var gender: String = "Male"
+    @State private var maxBudget = ""
 
-    @State private var monthlyRent: String = ""
+    @State private var genderPreference = "Male"
+    @State private var occupation = "Student"
+    @State private var moveInDate = Date()
 
-    let propertyTypes = PostFormOptions.propertyTypes
-    let roomTypes = PostFormOptions.roomTypes
+    let propertyTypeOptions = PostFormOptions.propertyTypes
+    let roomTypeOptions = PostFormOptions.roomTypes
+    let furnishingOptions = PostFormOptions.furnishingOptions
     let genderOptions = PostFormOptions.genderOptions
+    let occupationOptions = PostFormOptions.occupationOptions
 
     var body: some View {
-        VStack(spacing: 0) {
-            HStack {
-                Button(action: { isPresented = false }) {
-                    ZStack {
-                        Circle()
-                            .fill(Color(.systemGray5))
-                            .frame(width: 36, height: 36)
-                        Image(systemName: "xmark")
-                            .font(.system(size: 14, weight: .medium))
-                            .foregroundColor(.primary)
-                    }
-                }
+        NavigationView {
+            ZStack {
+                Color(UIColor.systemGroupedBackground)
+                    .ignoresSafeArea()
 
-                Spacer()
-
-                Text("Edit Post")
-                    .font(.system(size: 17, weight: .semibold))
-                    .foregroundColor(.primary)
-
-                Spacer()
-
-                Button(action: { handleSave() }) {
-                    ZStack {
-                        Circle()
-                            .fill(Color.blue)
-                            .frame(width: 36, height: 36)
-                        Image(systemName: "checkmark")
-                            .font(.system(size: 14, weight: .bold))
-                            .foregroundColor(.white)
-                    }
-                }
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 12)
-            .background(Color(.systemGray6))
-
-            ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
-                    SectionHeader(title: "Property Choice")
-
-                    VStack(spacing: 0) {
-                        PickerRow(label: "Property Type", value: $propertyType, options: propertyTypes)
-                        Divider().padding(.leading, 16)
-                        PickerRow(label: "Room Type", value: $roomType, options: roomTypes)
-                        Divider().padding(.leading, 16)
-                        ClearableInputRow(placeholder: "Property name", text: $propertyName)
-                    }
-                    .background(Color.white)
-                    .cornerRadius(14)
-                    .padding(.horizontal)
-
-                    SectionHeader(title: "Add description")
-
-                    ZStack(alignment: .topLeading) {
-                        TextEditor(text: $description)
-                            .font(.system(size: 15))
-                            .foregroundColor(.primary)
-                            .frame(height: 100)
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 8)
-
-                        if description.isEmpty {
-                            Text("Hi there this my beautiful flat...")
-                                .font(.system(size: 15))
-                                .foregroundColor(Color(.systemGray3))
-                                .padding(.horizontal, 14)
-                                .padding(.vertical, 16)
-                                .allowsHitTesting(false)
-                        }
-
-                        if !description.isEmpty {
-                            VStack {
-                                HStack {
-                                    Spacer()
-                                    Button(action: { description = "" }) {
-                                        Image(systemName: "xmark.circle.fill")
-                                            .foregroundColor(Color(.systemGray3))
-                                            .font(.system(size: 16))
-                                    }
-                                    .padding(10)
-                                }
-                                Spacer()
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: 20) {
+                        FormSectionView(title: "Property Choice") {
+                            VStack(spacing: 0) {
+                                FormPickerRow(label: "Property Type", selection: $propertyType, options: propertyTypeOptions)
+                                FormDividerView()
+                                FormPickerRow(label: "Room Type", selection: $roomType, options: roomTypeOptions)
+                                FormDividerView()
+                                FormPickerRow(label: "Furnishing", selection: $furnishing, options: furnishingOptions)
                             }
                         }
-                    }
-                    .background(Color.white)
-                    .cornerRadius(14)
-                    .padding(.horizontal)
 
-                    SectionHeader(title: "Location")
-
-                    VStack(spacing: 0) {
-                        PlainInputRow(placeholder: "State", text: $state)
-                        Divider().padding(.leading, 16)
-                        PlainInputRow(placeholder: "City", text: $city)
-                    }
-                    .background(Color.white)
-                    .cornerRadius(14)
-                    .padding(.horizontal)
-
-                    SectionHeader(title: "Looking for")
-
-                    VStack(spacing: 0) {
-                        PickerRow(label: "Gender", value: $gender, options: genderOptions)
-                    }
-                    .background(Color.white)
-                    .cornerRadius(14)
-                    .padding(.horizontal)
-
-                    SectionHeader(title: "Budget")
-
-                    VStack(spacing: 0) {
-                        PlainInputRow(placeholder: "Monthly Rent", text: $monthlyRent)
-                            .keyboardType(.numberPad)
-                    }
-                    .background(Color.white)
-                    .cornerRadius(14)
-                    .padding(.horizontal)
-
-                    SectionHeader(title: "Photos")
-
-                    Button(action: {}) {
-                        HStack(spacing: 8) {
-                            Image(systemName: "photo.on.rectangle")
-                                .font(.system(size: 16))
-                                .foregroundColor(.blue)
-                            Text("Add Flat Photos")
-                                .font(.system(size: 15))
-                                .foregroundColor(.blue)
+                        FormSectionView(title: "Location") {
+                            VStack(spacing: 0) {
+                                FormTextFieldRow(placeholder: "State", text: $state)
+                                FormDividerView()
+                                FormTextFieldRow(placeholder: "City", text: $city)
+                            }
                         }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 16)
-                        .background(Color.white)
-                        .cornerRadius(14)
-                    }
-                    .padding(.horizontal)
 
-                    SectionHeader(title: "AR Model (Optional)")
-
-                    Button(action: {}) {
-                        HStack(spacing: 8) {
-                            Image(systemName: "rotate.3d")
-                                .font(.system(size: 16))
-                                .foregroundColor(.blue)
-                            Text("Add Flat AR model")
-                                .font(.system(size: 15))
-                                .foregroundColor(.blue)
+                        FormSectionView(title: "Looking for") {
+                            FormPickerRow(label: "Gender", selection: $gender, options: genderOptions)
                         }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 16)
-                        .background(Color.white)
-                        .cornerRadius(14)
+
+                        FormSectionView(title: "Budget") {
+                            FormTextFieldRow(placeholder: "Maximum Monthly Budget", text: $maxBudget, keyboardType: .numberPad)
+                        }
+
+                        FormSectionView(title: "Flatmate Preferences") {
+                            VStack(spacing: 0) {
+                                FormPickerRow(label: "Gender Preferences", selection: $genderPreference, options: genderOptions)
+                                FormDividerView()
+                                FormPickerRow(label: "Occupation", selection: $occupation, options: occupationOptions)
+                                FormDividerView()
+                                FormDateRow(label: "Move-in Date", date: $moveInDate)
+                            }
+                        }
+
+                        Spacer(minLength: 40)
                     }
-                    .padding(.horizontal)
-                    .padding(.bottom, 32)
+                    .padding(.top, 16)
+                    .padding(.horizontal, 16)
                 }
-                .padding(.top, 16)
             }
-            .background(Color(.systemGray6))
+            .navigationTitle("Edit Post")
+            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarBackButtonHidden(true)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button(action: { isPresented = false }) {
+                        Image(systemName: "xmark")
+                            .font(.system(size: 13, weight: .semibold))
+                            .foregroundColor(.primary)
+                            .frame(width: 32, height: 32)
+                            .background(Color(UIColor.systemBackground))
+                            .clipShape(Circle())
+                            .overlay(
+                                Circle().stroke(Color(UIColor.systemGray5), lineWidth: 0.5)
+                            )
+                    }
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: { isPresented = false }) {
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 13, weight: .bold))
+                            .foregroundColor(.white)
+                            .frame(width: 32, height: 32)
+                            .background(Color.blue)
+                            .clipShape(Circle())
+                    }
+                }
+            }
         }
-        .background(Color(.systemGray6))
-        .navigationBarHidden(true)
     }
+}
 
-    private func handleSave() {
-        isPresented = false
+struct FormSectionView<Content: View>: View {
+    let title: String
+    @ViewBuilder var content: Content
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(title)
+                .font(.system(size: 13, weight: .medium))
+                .foregroundColor(.secondary)
+                .padding(.leading, 4)
+
+            VStack(spacing: 0) {
+                content
+            }
+            .background(Color(UIColor.systemBackground))
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+        }
+    }
+}
+
+struct FormDividerView: View {
+    var body: some View {
+        Divider().padding(.horizontal, 16)
+    }
+}
+
+struct FormPickerRow: View {
+    let label: String
+    @Binding var selection: String
+    let options: [String]
+
+    var body: some View {
+        HStack {
+            Text(label)
+                .font(.system(size: 15))
+                .foregroundColor(.primary)
+
+            Spacer()
+
+            Menu {
+                ForEach(options, id: \.self) { option in
+                    Button(option) { selection = option }
+                }
+            } label: {
+                HStack(spacing: 3) {
+                    Text(selection)
+                        .font(.system(size: 14))
+                        .foregroundColor(.secondary)
+                    Image(systemName: "chevron.up.chevron.down")
+                        .font(.system(size: 9, weight: .medium))
+                        .foregroundColor(.secondary)
+                }
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 14)
+    }
+}
+
+struct FormTextFieldRow: View {
+    let placeholder: String
+    @Binding var text: String
+    var keyboardType: UIKeyboardType = .default
+
+    var body: some View {
+        TextField(placeholder, text: $text)
+            .font(.system(size: 15))
+            .foregroundColor(.primary)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 14)
+            .keyboardType(keyboardType)
+    }
+}
+
+struct FormDateRow: View {
+    let label: String
+    @Binding var date: Date
+
+    var body: some View {
+        HStack {
+            Text(label)
+                .font(.system(size: 15))
+                .foregroundColor(.primary)
+
+            Spacer()
+
+            DatePicker("", selection: $date, displayedComponents: .date)
+                .labelsHidden()
+                .datePickerStyle(.compact)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 10)
     }
 }
 

@@ -1,7 +1,7 @@
 import Foundation
 
 enum QuizData {
-    static let questions: [QuizQuestion] = [
+    static let coLivingQuestions: [QuizQuestion] = [
         QuizQuestion(
             id: "home_lifestyle",
             question: "What best describes your home lifestyle?",
@@ -91,5 +91,66 @@ enum QuizData {
             ]
         )
     ]
-}
 
+    static let flatmatesQuestions: [QuizQuestion] = [
+        QuizQuestion(
+            id: "flatmates_budget",
+            question: "What is your preferred monthly budget for a flat?",
+            subtitle: "Select one",
+            options: [
+                QuizOption(text: "Under ₹8,000"),
+                QuizOption(text: "₹8,000 - ₹12,000"),
+                QuizOption(text: "₹12,000 - ₹18,000"),
+                QuizOption(text: "₹18,000+")
+            ]
+        ),
+        QuizQuestion(
+            id: "flatmates_location",
+            question: "How flexible are you about location?",
+            subtitle: "Select one",
+            options: [
+                QuizOption(text: "Only one specific area"),
+                QuizOption(text: "2-3 nearby areas are okay"),
+                QuizOption(text: "Anywhere in city is fine"),
+                QuizOption(text: "Open to nearby cities too")
+            ]
+        ),
+        QuizQuestion(
+            id: "flatmates_movein",
+            question: "When do you want to move in?",
+            subtitle: "Select one",
+            options: [
+                QuizOption(text: "Immediately"),
+                QuizOption(text: "Within 2 weeks"),
+                QuizOption(text: "Within 1 month"),
+                QuizOption(text: "Flexible timeline")
+            ]
+        ),
+        QuizQuestion(
+            id: "flatmates_sharing",
+            question: "What type of sharing do you prefer?",
+            subtitle: "Select one",
+            options: [
+                QuizOption(text: "Private room only"),
+                QuizOption(text: "Double sharing"),
+                QuizOption(text: "Triple/shared is okay"),
+                QuizOption(text: "Any is fine")
+            ]
+        ),
+        QuizQuestion(
+            id: "flatmates_priority",
+            question: "What matters most to you while choosing a place?",
+            subtitle: "Select one",
+            options: [
+                QuizOption(text: "Low rent"),
+                QuizOption(text: "Prime location"),
+                QuizOption(text: "Clean and peaceful"),
+                QuizOption(text: "Amenities and comfort")
+            ]
+        )
+    ]
+
+    static func questions(for mode: UserMode) -> [QuizQuestion] {
+        return coLivingQuestions
+    }
+}

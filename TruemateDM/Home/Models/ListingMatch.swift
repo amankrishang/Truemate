@@ -20,5 +20,7 @@ extension ListingMatch {
 struct PostFormOptions {
     static let propertyTypes = ["Apartment", "House", "Studio", "Villa", "PG"]
     static let roomTypes = ["Single", "Double", "Triple", "Shared"]
+    static let furnishingOptions = ["Semi", "Fully", "Unfurnished"]
     static let genderOptions = ["Male", "Female", "Any"]
+    static let occupationOptions = ["Student", "Working Professional", "Any"]
 }
