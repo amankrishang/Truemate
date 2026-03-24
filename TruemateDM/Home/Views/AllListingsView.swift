@@ -82,13 +82,11 @@ struct AllListingsView: View {
                     }
                 }
             }
-        }
-        .sheet(isPresented: $showListingProfile) {
-            NavigationStack {
+            .navigationDestination(isPresented: $showListingProfile) {
                 FlatmateProfileView(
                     onBack: nil,
                     profile: FlatmateProfile.from(name: selectedProfileName),
-                    useBackButton: false
+                    useBackButton: true
                 )
             }
         }

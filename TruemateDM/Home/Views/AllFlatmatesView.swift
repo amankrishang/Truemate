@@ -129,7 +129,7 @@ struct AllFlatmatesView: View {
                 FlatmateProfileView(
                     onBack: nil,
                     profile: FlatmateProfile.from(name: selectedProfileName),
-                    useBackButton: true
+                    useBackButton: false
                 )
             }
         }
