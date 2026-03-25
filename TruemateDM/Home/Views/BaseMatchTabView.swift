@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct BaseMatchView: View {
+struct BaseMatchTabView: View {
     let openFlatmatesCreateOnAppear: Bool
     @State private var hasCreatedPost = false
     @State private var hasCreatedFlatRequirement = false
@@ -594,5 +594,5 @@ struct RoundedCorner: Shape {
 }
 
 #Preview {
-    BaseMatchView(openFlatmatesCreateOnAppear: false)
+    BaseMatchTabView(openFlatmatesCreateOnAppear: false)
 }
