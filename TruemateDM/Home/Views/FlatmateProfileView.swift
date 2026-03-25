@@ -1,19 +1,16 @@
 import SwiftUI
 
 struct FlatmateProfileView: View {
-    @Environment(\.dismiss) private var dismiss
-    let onBack: (() -> Void)?
+    let onClose: () -> Void
 
     @State private var showSuitabilityDetailsPage = false
     @State private var isSaved = false
 
     let profile: FlatmateProfile
-    let useBackButton: Bool
 
-    init(onBack: (() -> Void)?, profile: FlatmateProfile, useBackButton: Bool) {
-        self.onBack = onBack
+    init(profile: FlatmateProfile, onClose: @escaping () -> Void) {
         self.profile = profile
-        self.useBackButton = useBackButton
+        self.onClose = onClose
     }
 
     var body: some View {
@@ -180,11 +177,7 @@ struct FlatmateProfileView: View {
     }
 
     private func closeScreen() {
-        if let onBack {
-            onBack()
-        } else {
-            dismiss()
-        }
+        onClose()
     }
 }
 

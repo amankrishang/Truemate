@@ -156,9 +156,8 @@ struct FlatmatesMatchesWithRequirementView: View {
             case .profile:
                 NavigationStack {
                     FlatmateProfileView(
-                        onBack: nil,
                         profile: FlatmateProfile.from(name: selectedProfileName),
-                        useBackButton: true
+                        onClose: { activeSheet = nil }
                     )
                 }
             }
