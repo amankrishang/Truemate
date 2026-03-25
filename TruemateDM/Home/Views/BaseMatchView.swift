@@ -223,9 +223,8 @@ struct MatchesHomeView: View {
         .sheet(isPresented: $showFlatmateProfile) {
             NavigationStack {
                 FlatmateProfileView(
-                    onBack: nil,
                     profile: FlatmateProfile.from(name: selectedProfileName),
-                    useBackButton: true
+                    onClose: { showFlatmateProfile = false }
                 )
             }
         }
@@ -426,9 +425,8 @@ struct MatchesWithPostView: View {
         .sheet(isPresented: $showFlatmateProfile) {
             NavigationStack {
                 FlatmateProfileView(
-                    onBack: nil,
                     profile: FlatmateProfile.from(name: selectedProfileName),
-                    useBackButton: true
+                    onClose: { showFlatmateProfile = false }
                 )
             }
         }

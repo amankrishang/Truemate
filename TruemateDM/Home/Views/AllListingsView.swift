@@ -84,9 +84,8 @@ struct AllListingsView: View {
             }
             .navigationDestination(isPresented: $showListingProfile) {
                 FlatmateProfileView(
-                    onBack: nil,
                     profile: FlatmateProfile.from(name: selectedProfileName),
-                    useBackButton: true
+                    onClose: { showListingProfile = false }
                 )
             }
         }

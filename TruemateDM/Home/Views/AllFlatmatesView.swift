@@ -127,9 +127,8 @@ struct AllFlatmatesView: View {
             }
             .navigationDestination(isPresented: $showProfilePage) {
                 FlatmateProfileView(
-                    onBack: nil,
                     profile: FlatmateProfile.from(name: selectedProfileName),
-                    useBackButton: true
+                    onClose: { showProfilePage = false }
                 )
             }
         }
