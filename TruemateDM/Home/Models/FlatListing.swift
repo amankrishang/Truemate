@@ -35,3 +35,6 @@ extension FlatRequirement {
         FlatRequirement(icon: "clock", label: "Stay Duration", value: "Within a month")
     ]
 }
+
+
+// Extension used for higher readability
