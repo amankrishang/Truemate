@@ -41,7 +41,7 @@ struct AllFlatmatesView: View {
 
                         Spacer()
 
-                        Text("All flatmates")
+                        Text("All Flatmates")
                             .font(.system(size: 17, weight: .semibold))
                             .foregroundColor(.primary)
 
@@ -63,10 +63,10 @@ struct AllFlatmatesView: View {
                     .padding(.vertical, 12)
 
                     HStack(spacing: 0) {
-                        SegmentButton(title: "Recommended flatmates", isSelected: selectedTab == .recommended) {
+                        SegmentButton(title: "Recommended \nFlatmates", isSelected: selectedTab == .recommended) {
                             selectedTab = .recommended
                         }
-                        SegmentButton(title: "Saved flatmates", isSelected: selectedTab == .saved) {
+                        SegmentButton(title: "Saved \nFlatmates", isSelected: selectedTab == .saved) {
                             selectedTab = .saved
                         }
                     }

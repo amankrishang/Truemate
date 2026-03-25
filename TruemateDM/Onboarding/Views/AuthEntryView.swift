@@ -90,9 +90,9 @@ struct AuthEntryView: View {
                     }
                 )
             case .home:
-                BaseMatchView(openFlatmatesCreateOnAppear: false)
+                BaseMatchTabView(openFlatmatesCreateOnAppear: false)
             case .homeCreatePost:
-                BaseMatchView(openFlatmatesCreateOnAppear: true)
+                BaseMatchTabView(openFlatmatesCreateOnAppear: true)
             }
         }
     }

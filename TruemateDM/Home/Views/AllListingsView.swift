@@ -103,12 +103,12 @@ struct ListingsSegmentedTabBar: View {
     var body: some View {
         HStack(spacing: 0) {
             ListingsTabButton(
-                title: "Recommended listings",
+                title: "Recommended Listings",
                 isSelected: selectedTab == .recommended,
                 action: { selectedTab = .recommended }
             )
             ListingsTabButton(
-                title: "Saved listings",
+                title: "Saved Listings",
                 isSelected: selectedTab == .saved,
                 action: { selectedTab = .saved }
             )
