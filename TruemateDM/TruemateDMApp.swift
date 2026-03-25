@@ -12,5 +12,5 @@ struct TruemateApp: App {
 
 extension Notification.Name {
     static let switchToChatsTab = Notification.Name("switchToChatsTab")
-    static let didSendAbhishekRequest = Notification.Name("didSendAbhishekRequest")
+    static let didSendMessageRequest = Notification.Name("didSendMessageRequest")
 }

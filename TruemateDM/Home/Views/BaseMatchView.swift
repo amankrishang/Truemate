@@ -56,8 +56,11 @@ struct BaseMatchView: View {
         .onReceive(NotificationCenter.default.publisher(for: .switchToChatsTab)) { _ in
             selectedTab = 1
         }
-        .onReceive(NotificationCenter.default.publisher(for: .didSendAbhishekRequest)) { _ in
-            ChatInbox.shared.addAbhishekIfNeeded()
+        .onReceive(NotificationCenter.default.publisher(for: .didSendMessageRequest)) { notification in
+            let name = notification.userInfo?["name"] as? String ?? ""
+            if !name.isEmpty {
+                ChatInbox.shared.addChatIfNeeded(name: name)
+            }
             selectedTab = 1
         }
     }

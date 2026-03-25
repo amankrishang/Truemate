@@ -72,9 +72,11 @@ struct FlatmateProfileView: View {
                 .padding(.bottom, 16)
 
                 Button(action: {
-                    if profile.name == "Abhishek Gupta" {
-                        NotificationCenter.default.post(name: .didSendAbhishekRequest, object: nil)
-                    }
+                    NotificationCenter.default.post(
+                        name: .didSendMessageRequest,
+                        object: nil,
+                        userInfo: ["name": profile.name]
+                    )
                     closeScreen()
                 }) {
                     Text("Send Message Request")
